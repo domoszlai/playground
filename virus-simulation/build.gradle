@@ -1,0 +1,13 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+mainClassName = 'virus.Main'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.jgrapht:jgrapht-core:1.4.0'
+}
