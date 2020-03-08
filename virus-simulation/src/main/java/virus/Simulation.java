@@ -69,7 +69,7 @@ public class Simulation {
                         ? param.piq : param.pi;
             
             var iter = new BreadthFirstIterator<Person, DefaultEdge>(graph, infectedPerson);
-            iter.next(); // Drop first element, which is infectedPerson itdelf
+            iter.next(); // Drop first element which is infectedPerson itself
             
             // ... and iterate over all acquaintances in order of distance
             // to infect them
@@ -78,7 +78,7 @@ public class Simulation {
                 var p = iter.next();
                 // The distance from the current infected person
                 // 1: direct connection
-                // 2: direct conection of a direct connection
+                // 2: direct connection of a direct connection
                 // ...
                 var d = iter.getDepth(p); 
                 
