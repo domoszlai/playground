@@ -9,8 +9,6 @@
            (io.netty.channel.kqueue KQueueEventLoopGroup KQueueDomainSocketChannel)
            (io.netty.channel.unix DomainSocketAddress)))
 
-;; https://stackoverflow.com/questions/33296749/netty-connect-to-unix-domain-socket-failed
-
 (defn start-client
   [path]
   (let [handler (channel-inbound-handler
