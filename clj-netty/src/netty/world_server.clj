@@ -1,6 +1,7 @@
 (ns netty.world-server
   (:require [netty :refer [channel-initializer channel-inbound-handler ->bytebuf ->str]]
             [netty.transport :as transport]
+            [netty.handler :as hnd]
             [clojure.tools.logging :as log])
   (:import (io.netty.bootstrap ServerBootstrap)
            (io.netty.channel.socket ServerSocketChannel)
@@ -8,22 +9,19 @@
 
 (defn start-server
   [transport]
-  (let [handler (channel-inbound-handler
+  (let [hellohnd 
+        {:name "hello"
+         :handler (channel-inbound-handler
 
-                 :channel-active
-                 ([_ ctx]
-                  (.writeAndFlush (.channel ctx) (->bytebuf "hello")))
+                   :channel-active
+                   ([_ ctx]
+                    (.writeAndFlush (.channel ctx) (->bytebuf "hello")))
 
-                 :channel-read
-                 ([_ ctx msg]
-                  (log/info "Got a message" (->str msg))
-                  (ReferenceCountUtil/release msg)
-                  (.writeAndFlush (.channel ctx) (->bytebuf "goodbye")))
-
-                 :exception-caught
-                 ([_ ctx cause]
-                  (log/error (.getMessage cause))
-                  (.close ctx)))
+                   :channel-read
+                   ([_ ctx msg]
+                    (log/info "Got a message" (->str msg))
+                    (ReferenceCountUtil/release msg)
+                    (.writeAndFlush (.channel ctx) (->bytebuf "goodbye"))))}
 
         address (:address transport)
         group (:group transport)
@@ -32,7 +30,7 @@
         b (doto (ServerBootstrap.)
             (.group group)
             (.channel channel)
-            (.childHandler (channel-initializer handler)))
+            (.childHandler (channel-initializer [(hnd/oexp) hellohnd (hnd/iexp)])))
 
         ^ServerSocketChannel
         ch (-> b (.bind address) .sync .channel)]
