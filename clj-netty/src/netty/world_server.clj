@@ -22,7 +22,8 @@
 
                  :exception-caught
                  ([_ ctx cause]
-                  (log/error (.getMessage cause))))
+                  (log/error (.getMessage cause))
+                  (.close ctx)))
 
         address (:address transport)
         group (:group transport)
