@@ -1,16 +1,13 @@
 (ns netty.world-server
-  (:require [env :refer [mac?]]
-            [netty :refer [channel-initializer channel-inbound-handler ->bytes ->str]]
+  (:require [netty :refer [channel-initializer channel-inbound-handler ->bytes ->str]]
+            [netty.transport :as transport]
             [clojure.tools.logging :as log])
   (:import (io.netty.bootstrap ServerBootstrap)
            (io.netty.buffer ByteBuf)
-           (io.netty.channel.socket ServerSocketChannel)
-           (io.netty.channel.epoll EpollEventLoopGroup EpollServerDomainSocketChannel)
-           (io.netty.channel.kqueue KQueueEventLoopGroup KQueueServerDomainSocketChannel)
-           (io.netty.channel.unix DomainSocketAddress)))
+           (io.netty.channel.socket ServerSocketChannel)))
 
 (defn start-server
-  [path]
+  [transport]
   (let [handler (channel-inbound-handler
 
                  :channel-active
@@ -27,15 +24,9 @@
                     (.writeBytes buff (->bytes "goodbye"))
                     (.writeAndFlush ctx buff))))
 
-        address (DomainSocketAddress. path)
-
-        group (if (mac?)
-                (KQueueEventLoopGroup.)
-                (EpollEventLoopGroup.))
-
-        channel (if (mac?)
-                  KQueueServerDomainSocketChannel
-                  EpollServerDomainSocketChannel)
+        address (:address transport)
+        group (:group transport)
+        channel (:server-channel transport)
 
         b (doto (ServerBootstrap.)
             (.group group)
@@ -48,4 +39,5 @@
     (-> ch .closeFuture .sync)))
 
 (defn -main []
-  (start-server "/tmp/app.world"))
+  #_(start-server (transport/uds-transport "/tmp/app.world"))
+  (start-server (transport/tcp-transport "127.0.0.1" 12000)))
