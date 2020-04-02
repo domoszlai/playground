@@ -12,7 +12,7 @@
 
                  :channel-active
                  ([_ ctx]
-                  (.writeAndFlush ctx (->bytebuf "hello")))
+                  (.writeAndFlush (.channel ctx) (->bytebuf "hello")))
 
                  :channel-read
                  ([_ ctx msg]

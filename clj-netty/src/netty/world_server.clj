@@ -12,13 +12,13 @@
 
                  :channel-active
                  ([_ ctx]
-                  (.writeAndFlush ctx (->bytebuf "hello")))
+                  (.writeAndFlush (.channel ctx) (->bytebuf "hello")))
 
                  :channel-read
                  ([_ ctx msg]
                   (log/info "Got a message" (->str msg))
                   (ReferenceCountUtil/release msg)
-                  (.writeAndFlush ctx (->bytebuf "goodbye"))))
+                  (.writeAndFlush (.channel ctx) (->bytebuf "goodbye"))))
 
         address (:address transport)
         group (:group transport)
