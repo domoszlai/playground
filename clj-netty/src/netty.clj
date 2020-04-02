@@ -1,17 +1,18 @@
 (ns netty
   (:import (io.netty.channel Channel ChannelInitializer ChannelInboundHandler ChannelHandler)
+           (io.netty.buffer ByteBuf Unpooled)
            (java.nio.charset Charset)))
 
 (def utf8
   (Charset/forName "UTF-8"))
 
-(defn ->bytes
+(defn ->bytebuf
   [str]
-  (bytes (byte-array (map (comp byte int) str))))
+  (Unpooled/copiedBuffer str utf8))
 
 (defn ->str
-  [buff]
-  (.toString buff utf8))
+  [bytebuf]
+  (.toString (cast ByteBuf bytebuf) utf8))
 
 (defn channel-initializer [^ChannelHandler handler]
   (let [handlers (into-array ChannelHandler [handler])]

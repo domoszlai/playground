@@ -1,9 +1,8 @@
 (ns netty.world-server
-  (:require [netty :refer [channel-initializer channel-inbound-handler ->bytes ->str]]
+  (:require [netty :refer [channel-initializer channel-inbound-handler ->bytebuf ->str]]
             [netty.transport :as transport]
             [clojure.tools.logging :as log])
   (:import (io.netty.bootstrap ServerBootstrap)
-           (io.netty.buffer ByteBuf)
            (io.netty.channel.socket ServerSocketChannel)
            (io.netty.util ReferenceCountUtil)))
 
@@ -13,18 +12,13 @@
 
                  :channel-active
                  ([_ ctx]
-                  (let [buff (.buffer (.alloc ctx))]
-                    (.writeBytes buff (->bytes "hello"))
-                    (.writeAndFlush ctx buff)))
+                  (.writeAndFlush ctx (->bytebuf "hello")))
 
                  :channel-read
                  ([_ ctx msg]
-                  (let [str (->str (cast ByteBuf msg))
-                        buff (.buffer (.alloc ctx))]
-                    (log/info "Got a message" str)
-                    (.writeBytes buff (->bytes "goodbye"))
-                    (.writeAndFlush ctx buff)))
-                 (ReferenceCountUtil/release msg))
+                  (log/info "Got a message" (->str msg))
+                  (ReferenceCountUtil/release msg)
+                  (.writeAndFlush ctx (->bytebuf "goodbye"))))
 
         address (:address transport)
         group (:group transport)
