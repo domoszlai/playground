@@ -4,7 +4,8 @@
             [clojure.tools.logging :as log])
   (:import (io.netty.bootstrap ServerBootstrap)
            (io.netty.buffer ByteBuf)
-           (io.netty.channel.socket ServerSocketChannel)))
+           (io.netty.channel.socket ServerSocketChannel)
+           (io.netty.util ReferenceCountUtil)))
 
 (defn start-server
   [transport]
@@ -22,7 +23,8 @@
                         buff (.buffer (.alloc ctx))]
                     (log/info "Got a message" str)
                     (.writeBytes buff (->bytes "goodbye"))
-                    (.writeAndFlush ctx buff))))
+                    (.writeAndFlush ctx buff)))
+                 (ReferenceCountUtil/release msg))
 
         address (:address transport)
         group (:group transport)

@@ -4,7 +4,8 @@
             [clojure.tools.logging :as log])
   (:import (io.netty.bootstrap Bootstrap)
            (io.netty.buffer ByteBuf)
-           (io.netty.channel Channel)))
+           (io.netty.channel Channel)
+           (io.netty.util ReferenceCountUtil)))
 
 (defn start-client
   [transport]
@@ -19,7 +20,8 @@
                  :channel-read
                  ([_ ctx msg]
                   (let [str (->str (cast ByteBuf msg))]
-                    (log/info "Got a message" str))))
+                    (log/info "Got a message" str))
+                  (ReferenceCountUtil/release msg)))
 
         address (:address transport)
         group (:group transport)
