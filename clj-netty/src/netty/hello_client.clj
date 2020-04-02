@@ -17,7 +17,11 @@
                  :channel-read
                  ([_ ctx msg]
                   (log/info "Got a message" (->str msg))
-                  (ReferenceCountUtil/release msg)))
+                  (ReferenceCountUtil/release msg))
+
+                 :exception-caught
+                 ([_ ctx cause]
+                  (log/error (.getMessage cause))))
 
         address (:address transport)
         group (:group transport)

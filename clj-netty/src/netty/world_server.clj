@@ -18,7 +18,11 @@
                  ([_ ctx msg]
                   (log/info "Got a message" (->str msg))
                   (ReferenceCountUtil/release msg)
-                  (.writeAndFlush (.channel ctx) (->bytebuf "goodbye"))))
+                  (.writeAndFlush (.channel ctx) (->bytebuf "goodbye")))
+
+                 :exception-caught
+                 ([_ ctx cause]
+                  (log/error (.getMessage cause))))
 
         address (:address transport)
         group (:group transport)
