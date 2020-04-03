@@ -1,6 +1,7 @@
 (ns netty
   (:import (io.netty.channel Channel ChannelInitializer ChannelInboundHandler ChannelOutboundHandler ChannelHandler)
            (io.netty.buffer ByteBuf Unpooled)
+           (io.netty.handler.codec Delimiters)
            (java.nio.charset Charset)))
 
 (def utf8
@@ -14,11 +15,18 @@
   [bytebuf]
   (.toString (cast ByteBuf bytebuf) utf8))
 
-(defn channel-initializer [handlers]
+(defn channel-initializer
+  [handlers]
   (proxy [ChannelInitializer] []
     (initChannel [^Channel ch]
-      (doseq [{:keys [name handler]} handlers]
-        (.addLast (.pipeline ch) name handler)))))
+      (doseq [handlerfn handlers]
+        (let [{:keys [name handler]} (handlerfn)]
+          (.addLast (.pipeline ch) name handler))))))
+
+(defn write-with-delimeter
+  [channel bytebuf]
+  (.write channel bytebuf)
+  (.writeAndFlush channel (first (Delimiters/lineDelimiter))))
 
 (defmacro channel-inbound-handler
   [& {:as handlers}]

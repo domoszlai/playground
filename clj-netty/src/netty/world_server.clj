@@ -1,5 +1,5 @@
 (ns netty.world-server
-  (:require [netty :refer [channel-initializer channel-inbound-handler ->bytebuf ->str]]
+  (:require [netty :refer [channel-initializer channel-inbound-handler ->bytebuf write-with-delimeter]]
             [netty.transport :as transport]
             [netty.handler :as hnd]
             [clojure.tools.logging :as log])
@@ -9,19 +9,23 @@
 
 (defn start-server
   [transport]
-  (let [hellohnd 
-        {:name "hello"
-         :handler (channel-inbound-handler
+  (let [hellohnd (fn []
+                   {:name "hello"
+                    :handler (channel-inbound-handler
 
-                   :channel-active
-                   ([_ ctx]
-                    (.writeAndFlush (.channel ctx) (->bytebuf "hello")))
+                              :channel-active
+                              ([_ ctx]
+                               (write-with-delimeter (.channel ctx) (->bytebuf "hello")))
 
-                   :channel-read
-                   ([_ ctx msg]
-                    (log/info "Got a message" (->str msg))
-                    (ReferenceCountUtil/release msg)
-                    (.writeAndFlush (.channel ctx) (->bytebuf "goodbye"))))}
+                              :channel-inactive
+                              ([_ ctx]
+                               (log/info "Channel closed"))
+
+                              :channel-read
+                              ([_ ctx msg]
+                               (log/info "Got a message" msg)
+                               #_(ReferenceCountUtil/release msg)
+                               (write-with-delimeter (.channel ctx) (->bytebuf "goodbye"))))})
 
         address (:address transport)
         group (:group transport)
@@ -30,7 +34,11 @@
         b (doto (ServerBootstrap.)
             (.group group)
             (.channel channel)
-            (.childHandler (channel-initializer [(hnd/oexp) hellohnd (hnd/iexp)])))
+            (.childHandler (channel-initializer [hnd/oexp
+                                                 hnd/delimiter
+                                                 hnd/string
+                                                 hellohnd
+                                                 hnd/iexp])))
 
         ^ServerSocketChannel
         ch (-> b (.bind address) .sync .channel)]
