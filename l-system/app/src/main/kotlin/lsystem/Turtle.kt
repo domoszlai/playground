@@ -73,7 +73,7 @@ object PopState : TurtleCommand() {
     }
 }
 
-class Turtle(val canvas: Canvas, private val params: TurtleParams = TurtleParams()) {
+class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canvas = Canvas()) {
 
     private val initialState = TurtleState()
     private var sts = listOf<TurtleState>(initialState)
