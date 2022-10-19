@@ -16,14 +16,23 @@ object TurtleRewriter {
     fun createCustomNode(name: String): TurtleRewriterNode =
         TurtleRewriterNode(name, listOf())
 
-    fun createPushStateNode(name: String): TurtleRewriterNode =
+    fun createPushStateNode(name: String = "["): TurtleRewriterNode =
         TurtleRewriterNode(name, listOf(PushState))
 
-    fun createPopStateNode(name: String): TurtleRewriterNode =
+    fun createPopStateNode(name: String = "]"): TurtleRewriterNode =
         TurtleRewriterNode(name, listOf(PopState))
 
-    fun toTurtleCommands(nodes: List<TurtleRewriterNode>) : List<TurtleCommand> {
-        return nodes.flatMap { it.turtleCommands }
+    fun generatePath(
+        rewriter: Rewriter<TurtleRewriterNode>,
+        axiom: List<TurtleRewriterNode>,
+        n: Int,
+        params: TurtleParams = TurtleParams()
+    ) : List<DrawCmd> {
+        val nodes = rewriter.rewrite(axiom, n)
+        val turtle = Turtle(params)
+        var turtleCommands = nodes.flatMap { it.turtleCommands }
+        turtle.execute(turtleCommands)
+        return turtle.path
     }
 }
 

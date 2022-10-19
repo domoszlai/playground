@@ -19,35 +19,39 @@ data class TurtleParams (
     val angleIncrementRadians = Math.toRadians(angleIncrementDegrees)
 }
 
-sealed interface TurtleCommand {
-    fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
+sealed class TurtleCommand {
+    abstract fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
+
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
 }
 
-object PenDown : TurtleCommand {
+object PenDown : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = true) }
     }
 }
 
-object PenUp : TurtleCommand {
+object PenUp : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = false) }
     }
 }
 
-object Left : TurtleCommand {
+object Left : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
     }
 }
 
-object Right : TurtleCommand {
+object Right : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
     }
 }
 
-object Forward : TurtleCommand {
+object Forward : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(
             x = it.x + params.stepSize * cos(it.headingRadians),
@@ -56,50 +60,49 @@ object Forward : TurtleCommand {
     }
 }
 
-object PushState : TurtleCommand {
+object PushState : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         val top = sts.peek()
         return if(top != null) sts.push(top) else sts
     }
 }
 
-object PopState : TurtleCommand {
+object PopState : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.pop()
     }
 }
 
+class Turtle(private val params: TurtleParams = TurtleParams()) {
 
+    private val initialState = TurtleState()
+    private var sts = listOf<TurtleState>(initialState)
+    var path = listOf<DrawCmd>(MoveTo(initialState.x, initialState.y))
 
-class Turtle (private val params: TurtleParams = TurtleParams()) {
+    fun execute(commands: List<TurtleCommand>){
+        for(cmd in commands) {
+            execute(cmd)
+        }
+    }
 
-    // Generates drawing commands for the SVG coordinate system
-    fun interpret(commands: List<TurtleCommand>): List<DrawCmd> {
-        var initialState = TurtleState()
-        var sts = listOf<TurtleState>(initialState)
-        var path = listOf<DrawCmd>(MoveTo(initialState.x, initialState.y))
+    fun execute(cmd: TurtleCommand) {
+        val oldState = sts.peek()
+        sts = cmd.execute(params, sts)
+        val newState = sts.peek()
 
-        for (cmd in commands) {
-            val oldState = sts.peek()
-            sts = cmd.execute(params, sts)
-            val newState = sts.peek()
-
-            if(oldState != null && newState != null){
-                if(cmd === Forward) {
-                    path = if (oldState.drawing) {
-                        path + LineTo(newState.x, newState.y)
-                    } else {
-                        path + MoveTo(newState.x, newState.y)
-                    }
+        if(oldState != null && newState != null){
+            if(cmd === Forward) {
+                path = if (oldState.drawing) {
+                    path + LineTo(newState.x, newState.y)
+                } else {
+                    path + MoveTo(newState.x, newState.y)
                 }
-                else if(cmd == PopState) {
-                    if(oldState.x != newState.x || oldState.y != newState.y) {
-                        path = path + MoveTo(newState.x, newState.y)
-                    }
+            }
+            else if(cmd == PopState) {
+                if(oldState.x != newState.x || oldState.y != newState.y) {
+                    path = path + MoveTo(newState.x, newState.y)
                 }
             }
         }
-
-        return path
     }
 }

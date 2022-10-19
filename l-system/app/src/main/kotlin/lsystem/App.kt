@@ -4,10 +4,7 @@
 package lsystem
 
 fun generateSVG(rewriter: Rewriter<TurtleRewriterNode>, axiom: List<TurtleRewriterNode>, n: Int, params: TurtleParams = TurtleParams()) {
-    val nodes = rewriter.rewrite(axiom, n)
-    val turtle = Turtle(params)
-    val path = turtle.interpret(TurtleRewriter.toTurtleCommands(nodes))
-
+    val path = TurtleRewriter.generatePath(rewriter, axiom, n, params)
     val canvas = Canvas(800, 600)
     val svg = canvas.toSVG(path)
     println(svg)
@@ -22,8 +19,8 @@ fun main() {
     val f = TurtleRewriter.createForwardNonDrawingNode()
     val `+` = TurtleRewriter.createLeftNode()
     val `-` = TurtleRewriter.createRightNode()
-    val `(` = TurtleRewriter.createPushStateNode("[")
-    val `)` = TurtleRewriter.createPopStateNode("]")
+    val `(` = TurtleRewriter.createPushStateNode()
+    val `)` = TurtleRewriter.createPopStateNode()
     // Node rewriting
     val L = TurtleRewriter.createCustomNode("L")
     val R = TurtleRewriter.createCustomNode("R")
