@@ -3,7 +3,7 @@ package lsystem
 fun generateSVG(rewriter: Rewriter<TurtleRewriterNode>, axiom: List<TurtleRewriterNode>, n: Int, params: TurtleParams = TurtleParams()) {
     val turtle = Turtle(params)
     turtle.execute(rewriter, axiom, n)
-    val svg = turtle.canvas.toSVG(800, 600)
+    val svg = turtle.canvas.toSVG()
     println(svg)
 }
 
@@ -31,7 +31,7 @@ fun main() {
     quadraticSnowflake.addRule(F to listOf(F, `+`, F, `-`, F, `-`, F, `+`, F))
     //generateSVG(quadraticSnowflake, listOf(`-`, F), 4)
 
-    var gosperCurve = Rewriter<TurtleRewriterNode>()
+    val gosperCurve = Rewriter<TurtleRewriterNode>()
     gosperCurve.addRule(Fl to listOf(Fl, `+`, Fr, `+`, `+`, Fr, `-`, Fl, `-`, `-`, Fl, Fl, `-`, Fr, `+`))
     gosperCurve.addRule(Fr to listOf(`-`, Fl, `+`, Fr, Fr, `+`, `+`, Fr, `+`, Fl, `-`, `-`, Fl, `-`, Fr))
     //generateSVG(gosperCurve, listOf(Fl), 4, TurtleParams(angleIncrementDegrees = 60.0))

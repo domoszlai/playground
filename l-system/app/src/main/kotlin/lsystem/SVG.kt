@@ -44,12 +44,14 @@ private fun getMinimumLineLength(path: List<DrawCommand>) : Double {
     return minimumLength
 }
 
-fun Canvas.toSVG(width: Int, height: Int): String {
+fun Canvas.toSVG(width: Int? = null, height: Int? = null): String {
     // Heuristic to get some proper stroke width for any arbitrary detailed drawings
     val strokeWidth = getMinimumLineLength(path)/10
 
     return buildString {
-        append("<svg height=\"$height\" width=\"$width\"")
+        append("<svg")
+        if(height != null) append(" height=\"$height\"")
+        if(width != null) append(" width=\"$width\"")
         append(" viewBox=\"0 0 ${fmt(boundaries.width)} ${fmt(boundaries.height)}\">\n")
         // Transform the image coordinate system to SVG (invert vertically)
         append("<g transform=\"translate(0,${fmt(boundaries.height)}) scale(1,-1)\">\n")
