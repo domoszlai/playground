@@ -9,9 +9,9 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-sealed interface DrawCmd
-data class MoveTo(val x: Double, val y: Double) : DrawCmd
-data class LineTo(val x: Double, val y: Double) : DrawCmd
+sealed interface DrawCommand
+data class MoveTo(val x: Double, val y: Double) : DrawCommand
+data class LineTo(val x: Double, val y: Double) : DrawCommand
 
 data class Rectangle(
     val x1: Double,
@@ -24,36 +24,42 @@ data class Rectangle(
 
 class Canvas (private val width: Int, private val height: Int) {
 
-    private fun getBoundaries(path: List<DrawCmd>) : Rectangle {
+    // From (0,0) unless first command is MoveTo
+    var path = listOf<DrawCommand>()
+    var boundaries = Rectangle(0.0, 0.0, 0.0, 0.0)
 
-        // Go over first MoveTos to figure out start point
-        val beginningMoves = path.takeWhile { it is MoveTo }
-        var startPoint = beginningMoves.fold(Rectangle(0.0,0.0,0.0,0.0)) {
-            rect, m -> if (m is MoveTo) Rectangle(m.x, m.y, m.x, m.y) else rect
-        }
-
-        var remaining = path.dropWhile { it is MoveTo }
-        return remaining.fold(startPoint, fun (rect, cmd) : Rectangle {
-            val (x,y) = when (cmd) {
-                is MoveTo -> Pair(cmd.x, cmd.y)
-                is LineTo -> Pair(cmd.x, cmd.y)
-            }
-            return Rectangle(
-                min(rect.x1, x),
-                min(rect.y1, y),
-                max(rect.x2, x),
-                max(rect.y2, y)
-            )
-        })
+    fun moveTo(x: Double, y: Double){
+        appendToPath(MoveTo(x, y))
     }
 
-    private fun getMinimalLineLength(path: List<DrawCmd>) : Double {
+    fun lineTo(x: Double, y: Double){
+        appendToPath(LineTo(x, y))
+    }
 
-        // Go over first MoveTos to figure out start point
-        /*val beginningMoves = path.takeWhile { it is MoveTo }
-        var startPoint = beginningMoves.fold(Pair(0.0, 0.0)) {
-                startPoint, m -> if (m is MoveTo) Pair(m.x, m.y) else startPoint
-        }*/
+    private fun appendToPath(cmd: DrawCommand) {
+        path = path + cmd
+        updateBoundaries(cmd)
+    }
+
+    private fun updateBoundaries(cmd: DrawCommand) {
+        if(path.size == 1 && cmd is MoveTo) {
+            boundaries = Rectangle(cmd.x, cmd.y, cmd.x, cmd.y)
+        }
+
+        val (x,y) = when (cmd) {
+            is MoveTo -> Pair(cmd.x, cmd.y)
+            is LineTo -> Pair(cmd.x, cmd.y)
+        }
+
+        boundaries = Rectangle(
+            min(boundaries.x1, x),
+            min(boundaries.y1, y),
+            max(boundaries.x2, x),
+            max(boundaries.y2, y)
+        )
+    }
+
+    private fun getMinimalLineLength(path: List<DrawCommand>) : Double {
 
         var minimumLength = Double.MAX_VALUE
 
@@ -73,8 +79,8 @@ class Canvas (private val width: Int, private val height: Int) {
         return minimumLength
     }
 
-    fun toSVG(path: List<DrawCmd>) : String {
-        val b = getBoundaries(path)
+    fun toSVG() : String {
+        val b = boundaries
         val strokeWidth = getMinimalLineLength(path)/10
 
         return buildString {
@@ -93,7 +99,7 @@ class Canvas (private val width: Int, private val height: Int) {
         return df.format(d)
     }
 
-    private fun buildSVGPathString(path: List<DrawCmd>) : String {
+    private fun buildSVGPathString(path: List<DrawCommand>) : String {
         return buildString {
             for(cmd in path) {
                 when (cmd) {

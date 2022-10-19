@@ -73,11 +73,14 @@ object PopState : TurtleCommand() {
     }
 }
 
-class Turtle(private val params: TurtleParams = TurtleParams()) {
+class Turtle(val canvas: Canvas, private val params: TurtleParams = TurtleParams()) {
 
     private val initialState = TurtleState()
     private var sts = listOf<TurtleState>(initialState)
-    var path = listOf<DrawCmd>(MoveTo(initialState.x, initialState.y))
+
+    init {
+        canvas.moveTo(initialState.x, initialState.y)
+    }
 
     fun execute(commands: List<TurtleCommand>){
         for(cmd in commands) {
@@ -93,14 +96,14 @@ class Turtle(private val params: TurtleParams = TurtleParams()) {
         if(oldState != null && newState != null){
             when(cmd) {
                 Forward ->
-                    path = if (oldState.drawing) {
-                        path + LineTo(newState.x, newState.y)
+                    if (oldState.drawing) {
+                        canvas.lineTo(newState.x, newState.y)
                     } else {
-                        path + MoveTo(newState.x, newState.y)
+                        canvas.moveTo(newState.x, newState.y)
                     }
                 PopState ->
                     if(oldState.x != newState.x || oldState.y != newState.y) {
-                        path = path + MoveTo(newState.x, newState.y)
+                        canvas.moveTo(newState.x, newState.y)
                     }
             }
         }
