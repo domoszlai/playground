@@ -17,6 +17,7 @@ data class Rectangle(
     val height = abs(y2 - y1)
 }
 
+// Standard Cartesian coordinate system
 class Canvas () {
 
     // From (0,0) unless first command is MoveTo

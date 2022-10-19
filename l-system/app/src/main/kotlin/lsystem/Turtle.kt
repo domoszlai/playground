@@ -6,7 +6,7 @@ import kotlin.math.sin
 data class TurtleState (
     val x: Double = 0.0,
     val y: Double = 0.0,
-    val headingDegrees: Double = 270.0, // faces up, SVG coordinate system
+    val headingDegrees: Double = 90.0, // faces up, SVG coordinate system
     val drawing: Boolean = true
 ) {
     val headingRadians = Math.toRadians(headingDegrees)
@@ -41,13 +41,13 @@ object PenUp : TurtleCommand() {
 
 object Left : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
-        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
+        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
     }
 }
 
 object Right : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
-        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
+        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
     }
 }
 

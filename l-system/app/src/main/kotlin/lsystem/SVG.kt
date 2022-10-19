@@ -50,9 +50,14 @@ fun Canvas.toSVG(width: Int, height: Int): String {
 
     return buildString {
         append("<svg height=\"$height\" width=\"$width\"")
-        append(" viewBox=\"${fmt(boundaries.x1)} ${fmt(boundaries.y1)} ${fmt(boundaries.width)} ${fmt(boundaries.height)}\">\n")
+        append(" viewBox=\"0 0 ${fmt(boundaries.width)} ${fmt(boundaries.height)}\">\n")
+        // Transform the image coordinate system to SVG (invert vertically)
+        append("<g transform=\"translate(0,${fmt(boundaries.height)}) scale(1,-1)\">\n")
+        append("<g transform=\"translate(${fmt(-boundaries.x1)},${fmt(-boundaries.y1)})\">\n")
         append("<path d=\"${buildSVGPathString(path)}\"")
         append( " stroke=\"black\" stroke-width=\"${fmt(strokeWidth)}\" fill=\"none\"/>\n")
+        append("</g>\n")
+        append("</g>\n")
         append("</svg>\n")
     }
 }
