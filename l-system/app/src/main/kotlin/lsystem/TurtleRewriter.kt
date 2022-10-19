@@ -1,37 +1,13 @@
 package lsystem
 
-object TurtleRewriter {
-    fun createForwardDrawingNode(name: String = "F"): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(PenDown, Forward))
-
-    fun createForwardNonDrawingNode(name: String = "f"): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(PenUp, Forward))
-
-    fun createLeftNode(name: String = "+"): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(Left))
-
-    fun createRightNode(name: String = "-"): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(Right))
-
-    fun createCustomNode(name: String): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf())
-
-    fun createPushStateNode(name: String = "["): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(PushState))
-
-    fun createPopStateNode(name: String = "]"): TurtleRewriterNode =
-        TurtleRewriterNode(name, listOf(PopState))
-
-    fun execute(
-        turtle: Turtle,
-        rewriter: Rewriter<TurtleRewriterNode>,
-        axiom: List<TurtleRewriterNode>,
-        n: Int
-    ) {
-        val nodes = rewriter.rewrite(axiom, n)
-        var turtleCommands = nodes.flatMap { it.turtleCommands }
-        turtle.execute(turtleCommands)
-    }
+fun Turtle.execute(
+    rewriter: Rewriter<TurtleRewriterNode>,
+    axiom: List<TurtleRewriterNode>,
+    n: Int
+){
+    val nodes = rewriter.rewrite(axiom, n)
+    var turtleCommands = nodes.flatMap { it.turtleCommands }
+    this.execute(turtleCommands)
 }
 
 class TurtleRewriterNode(
@@ -44,5 +20,28 @@ class TurtleRewriterNode(
 
     override fun equals(other: Any?): Boolean {
         return this === other
+    }
+
+    companion object {
+        fun createForwardDrawingNode(name: String = "F"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PenDown, Forward))
+
+        fun createForwardNonDrawingNode(name: String = "f"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PenUp, Forward))
+
+        fun createLeftNode(name: String = "+"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(Left))
+
+        fun createRightNode(name: String = "-"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(Right))
+
+        fun createCustomNode(name: String): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf())
+
+        fun createPushStateNode(name: String = "["): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PushState))
+
+        fun createPopStateNode(name: String = "]"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PopState))
     }
 }
