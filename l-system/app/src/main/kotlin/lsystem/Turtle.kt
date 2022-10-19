@@ -91,17 +91,17 @@ class Turtle(private val params: TurtleParams = TurtleParams()) {
         val newState = sts.peek()
 
         if(oldState != null && newState != null){
-            if(cmd === Forward) {
-                path = if (oldState.drawing) {
-                    path + LineTo(newState.x, newState.y)
-                } else {
-                    path + MoveTo(newState.x, newState.y)
-                }
-            }
-            else if(cmd == PopState) {
-                if(oldState.x != newState.x || oldState.y != newState.y) {
-                    path = path + MoveTo(newState.x, newState.y)
-                }
+            when(cmd) {
+                Forward ->
+                    path = if (oldState.drawing) {
+                        path + LineTo(newState.x, newState.y)
+                    } else {
+                        path + MoveTo(newState.x, newState.y)
+                    }
+                PopState ->
+                    if(oldState.x != newState.x || oldState.y != newState.y) {
+                        path = path + MoveTo(newState.x, newState.y)
+                    }
             }
         }
     }
