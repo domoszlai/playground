@@ -19,35 +19,35 @@ data class TurtleParams (
     val angleIncrementRadians = Math.toRadians(angleIncrementDegrees)
 }
 
-sealed interface PrimTurtleCommand {
+sealed interface TurtleCommand {
     fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
 }
 
-object PenDown : PrimTurtleCommand {
+object PenDown : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = true) }
     }
 }
 
-object PenUp : PrimTurtleCommand {
+object PenUp : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = false) }
     }
 }
 
-object Left : PrimTurtleCommand {
+object Left : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
     }
 }
 
-object Right : PrimTurtleCommand {
+object Right : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
     }
 }
 
-object Forward : PrimTurtleCommand {
+object Forward : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(
             x = it.x + params.stepSize * cos(it.headingRadians),
@@ -56,28 +56,20 @@ object Forward : PrimTurtleCommand {
     }
 }
 
-object PushState : PrimTurtleCommand {
+object PushState : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         val top = sts.peek()
         return if(top != null) sts.push(top) else sts
     }
 }
 
-object PopState : PrimTurtleCommand {
+object PopState : TurtleCommand {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.pop()
     }
 }
 
-data class TurtleCommand(val name: String, val primCommands: List<PrimTurtleCommand>) {
-    override fun toString(): String {
-        return name
-    }
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
-}
 
 class Turtle (private val params: TurtleParams = TurtleParams()) {
 
@@ -85,10 +77,9 @@ class Turtle (private val params: TurtleParams = TurtleParams()) {
     fun interpret(commands: List<TurtleCommand>): List<DrawCmd> {
         var initialState = TurtleState()
         var sts = listOf<TurtleState>(initialState)
-        var primCommands = commands.flatMap { it.primCommands }
         var path = listOf<DrawCmd>(MoveTo(initialState.x, initialState.y))
 
-        for (cmd in primCommands) {
+        for (cmd in commands) {
             val oldState = sts.peek()
             sts = cmd.execute(params, sts)
             val newState = sts.peek()
@@ -110,28 +101,5 @@ class Turtle (private val params: TurtleParams = TurtleParams()) {
         }
 
         return path
-    }
-
-    companion object {
-        fun createForwardDrawingCmd(name: String = "F"): TurtleCommand
-            = TurtleCommand(name, listOf(PenDown, Forward))
-
-        fun createForwardNonDrawingCmd(name: String = "f"): TurtleCommand
-            = TurtleCommand(name, listOf(PenUp, Forward))
-
-        fun createLeftCmd(name: String = "+"): TurtleCommand
-            = TurtleCommand(name, listOf(Left))
-
-        fun createRightCmd(name: String = "-"): TurtleCommand
-            = TurtleCommand(name, listOf(Right))
-
-        fun createDummyCmd(name: String): TurtleCommand
-            = TurtleCommand(name, listOf())
-
-        fun createPushStateCmd(name: String): TurtleCommand
-                = TurtleCommand(name, listOf(PushState))
-
-        fun createPopStateCmd(name: String): TurtleCommand
-                = TurtleCommand(name, listOf(PopState))
     }
 }

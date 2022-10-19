@@ -3,10 +3,10 @@
  */
 package lsystem
 
-fun generateSVG(rewriter: Rewriter<TurtleCommand>, axiom: List<TurtleCommand>, n: Int, params: TurtleParams = TurtleParams()) {
-    val turtleCommands = rewriter.rewrite(axiom, n)
+fun generateSVG(rewriter: Rewriter<TurtleRewriterNode>, axiom: List<TurtleRewriterNode>, n: Int, params: TurtleParams = TurtleParams()) {
+    val nodes = rewriter.rewrite(axiom, n)
     val turtle = Turtle(params)
-    val path = turtle.interpret(turtleCommands)
+    val path = turtle.interpret(TurtleRewriter.toTurtleCommands(nodes))
 
     val canvas = Canvas(800, 600)
     val svg = canvas.toSVG(path)
@@ -16,53 +16,52 @@ fun generateSVG(rewriter: Rewriter<TurtleCommand>, axiom: List<TurtleCommand>, n
 fun main() {
 
     // Edge rewriting
-    val F = Turtle.createForwardDrawingCmd()
-    val Fl = Turtle.createForwardDrawingCmd()
-    val Fr = Turtle.createForwardDrawingCmd()
-    val f = Turtle.createForwardNonDrawingCmd()
-    val `+` = Turtle.createLeftCmd()
-    val `-` = Turtle.createRightCmd()
-    val `(` = Turtle.createPushStateCmd("[")
-    val `)` = Turtle.createPopStateCmd("]")
+    val F = TurtleRewriter.createForwardDrawingNode()
+    val Fl = TurtleRewriter.createForwardDrawingNode()
+    val Fr = TurtleRewriter.createForwardDrawingNode()
+    val f = TurtleRewriter.createForwardNonDrawingNode()
+    val `+` = TurtleRewriter.createLeftNode()
+    val `-` = TurtleRewriter.createRightNode()
+    val `(` = TurtleRewriter.createPushStateNode("[")
+    val `)` = TurtleRewriter.createPopStateNode("]")
     // Node rewriting
-    val L = Turtle.createDummyCmd("L")
-    val R = Turtle.createDummyCmd("R")
-    val X = Turtle.createDummyCmd("X")
+    val L = TurtleRewriter.createCustomNode("L")
+    val R = TurtleRewriter.createCustomNode("R")
+    val X = TurtleRewriter.createCustomNode("X")
 
-    val kochIslandGenerator = Rewriter<TurtleCommand>()
+    val kochIslandGenerator = Rewriter<TurtleRewriterNode>()
     kochIslandGenerator.addRule(F to listOf(F, `-`, F, `+`, F, `+`, F, F, `-`, F, `-`, F, `+`, F))
     //generateSVG(kochIslandGenerator, listOf(F, `-`, F, `-`, F, `-`, F), 3)
 
-    val quadraticSnowflake = Rewriter<TurtleCommand>()
+    val quadraticSnowflake = Rewriter<TurtleRewriterNode>()
     quadraticSnowflake.addRule(F to listOf(F, `+`, F, `-`, F, `-`, F, `+`, F))
     //generateSVG(quadraticSnowflake, listOf(`-`, F), 4)
 
-    var gosperCurve = Rewriter<TurtleCommand>()
+    var gosperCurve = Rewriter<TurtleRewriterNode>()
     gosperCurve.addRule(Fl to listOf(Fl, `+`, Fr, `+`, `+`, Fr, `-`, Fl, `-`, `-`, Fl, Fl, `-`, Fr, `+`))
     gosperCurve.addRule(Fr to listOf(`-`, Fl, `+`, Fr, Fr, `+`, `+`, Fr, `+`, Fl, `-`, `-`, Fl, `-`, Fr))
     //generateSVG(gosperCurve, listOf(Fl), 4, TurtleParams(angleIncrementDegrees = 60.0))
 
-    val macroTile3x3 = Rewriter<TurtleCommand>()
+    val macroTile3x3 = Rewriter<TurtleRewriterNode>()
     macroTile3x3.addRule(L to listOf(L, F, `+`, R, F, R, `+`, F, L, `-`, F, `-`, L, F, L, F, L, `-`, F, R, F, R, `+`))
     macroTile3x3.addRule(R to listOf(`-`, L, F, L, F, `+`, R, F, R, F, R, `+`, F, `+`, R, F, `-`, L, F, L, `-`, F, R))
     //generateSVG(macroTile3x3, listOf(`-`, L), 3)
 
-    val peanoCurve = Rewriter<TurtleCommand>()
+    val peanoCurve = Rewriter<TurtleRewriterNode>()
     peanoCurve.addRule(L to listOf(L, F, R, F, L, `-`, F, `-`, R, F, L, F, R, `+`, F, `+`, L, F, R, F, L))
     peanoCurve.addRule(R to listOf(R, F, L, F, R, `+`, F, `+`, L, F, R, F, L, `-`, F, `-`, R, F, L, F, R))
     //generateSVG(peanoCurve, listOf(L), 2)
 
-    val axial1 = Rewriter<TurtleCommand>()
+    val axial1 = Rewriter<TurtleRewriterNode>()
     axial1.addRule(F to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, F))
-    generateSVG(axial1, listOf(F), 5, TurtleParams(angleIncrementDegrees = 25.7))
+    //generateSVG(axial1, listOf(F), 5, TurtleParams(angleIncrementDegrees = 25.7))
 
-    val axial2 = Rewriter<TurtleCommand>()
+    val axial2 = Rewriter<TurtleRewriterNode>()
     axial2.addRule(F to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, `(`, F, `)`))
     //generateSVG(axial2, listOf(F), 5, TurtleParams(angleIncrementDegrees = 20.0))
 
-    val axial4 = Rewriter<TurtleCommand>()
+    val axial4 = Rewriter<TurtleRewriterNode>()
     axial4.addRule(X to listOf(F, `(`, `+`, X, `)`, F, `(`, `-`, X, `)`, `+`, X, ))
     axial4.addRule(F to listOf(F, F))
-    //generateSVG(axial4, listOf(X), 7, TurtleParams(angleIncrementDegrees = 20.0))
-
+    generateSVG(axial4, listOf(X), 7, TurtleParams(angleIncrementDegrees = 20.0))
 }
