@@ -20,39 +20,52 @@ data class TurtleParams (
 }
 
 sealed interface PrimTurtleCommand {
-    fun execute (params: TurtleParams, st: TurtleState) : TurtleState
+    fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
 }
 
 object PenDown : PrimTurtleCommand {
-    override fun execute(params: TurtleParams, st: TurtleState): TurtleState {
-        return st.copy(drawing = true)
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(drawing = true) }
     }
 }
 
 object PenUp : PrimTurtleCommand {
-    override fun execute(params: TurtleParams, st: TurtleState): TurtleState {
-        return st.copy(drawing = false)
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(drawing = false) }
     }
 }
 
 object Left : PrimTurtleCommand {
-    override fun execute(params: TurtleParams, st: TurtleState): TurtleState {
-        return st.copy(headingDegrees = st.headingDegrees - params.angleIncrementDegrees)
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
     }
 }
 
 object Right : PrimTurtleCommand {
-    override fun execute(params: TurtleParams, st: TurtleState): TurtleState {
-        return st.copy(headingDegrees = st.headingDegrees + params.angleIncrementDegrees)
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
     }
 }
 
 object Forward : PrimTurtleCommand {
-    override fun execute(params: TurtleParams, st: TurtleState): TurtleState {
-        return st.copy(
-            x = st.x + params.stepSize * cos(st.headingRadians),
-            y = st.y + params.stepSize * sin(st.headingRadians)
-        )
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(
+            x = it.x + params.stepSize * cos(it.headingRadians),
+            y = it.y + params.stepSize * sin(it.headingRadians)
+        )}
+    }
+}
+
+object PushState : PrimTurtleCommand {
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        val top = sts.peek()
+        return if(top != null) sts.push(top) else sts
+    }
+}
+
+object PopState : PrimTurtleCommand {
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.pop()
     }
 }
 
@@ -70,20 +83,30 @@ class Turtle (private val params: TurtleParams = TurtleParams()) {
 
     // Generates drawing commands for the SVG coordinate system
     fun interpret(commands: List<TurtleCommand>): List<DrawCmd> {
-        var st = TurtleState()
+        var initialState = TurtleState()
+        var sts = listOf<TurtleState>(initialState)
         var primCommands = commands.flatMap { it.primCommands }
-        var path = listOf<DrawCmd>(MoveTo(st.x, st.y))
+        var path = listOf<DrawCmd>(MoveTo(initialState.x, initialState.y))
 
         for (cmd in primCommands) {
-            val newState = cmd.execute(params, st)
-            if(cmd === Forward){
-                path = if (st.drawing) {
-                    path + LineTo(newState.x, newState.y)
-                } else {
-                    path + MoveTo(newState.x, newState.y)
+            val oldState = sts.peek()
+            sts = cmd.execute(params, sts)
+            val newState = sts.peek()
+
+            if(oldState != null && newState != null){
+                if(cmd === Forward) {
+                    path = if (oldState.drawing) {
+                        path + LineTo(newState.x, newState.y)
+                    } else {
+                        path + MoveTo(newState.x, newState.y)
+                    }
+                }
+                else if(cmd == PopState) {
+                    if(oldState.x != newState.x || oldState.y != newState.y) {
+                        path = path + MoveTo(newState.x, newState.y)
+                    }
                 }
             }
-            st = newState
         }
 
         return path
@@ -102,8 +125,13 @@ class Turtle (private val params: TurtleParams = TurtleParams()) {
         fun createRightCmd(name: String = "-"): TurtleCommand
             = TurtleCommand(name, listOf(Right))
 
-        // Can be used for node rewriting
         fun createDummyCmd(name: String): TurtleCommand
             = TurtleCommand(name, listOf())
+
+        fun createPushStateCmd(name: String): TurtleCommand
+                = TurtleCommand(name, listOf(PushState))
+
+        fun createPopStateCmd(name: String): TurtleCommand
+                = TurtleCommand(name, listOf(PopState))
     }
 }

@@ -22,9 +22,12 @@ fun main() {
     val f = Turtle.createForwardNonDrawingCmd()
     val `+` = Turtle.createLeftCmd()
     val `-` = Turtle.createRightCmd()
+    val `(` = Turtle.createPushStateCmd("[")
+    val `)` = Turtle.createPopStateCmd("]")
     // Node rewriting
     val L = Turtle.createDummyCmd("L")
     val R = Turtle.createDummyCmd("R")
+    val X = Turtle.createDummyCmd("X")
 
     val kochIslandGenerator = Rewriter<TurtleCommand>()
     kochIslandGenerator.addRule(F to listOf(F, `-`, F, `+`, F, `+`, F, F, `-`, F, `-`, F, `+`, F))
@@ -47,5 +50,19 @@ fun main() {
     val peanoCurve = Rewriter<TurtleCommand>()
     peanoCurve.addRule(L to listOf(L, F, R, F, L, `-`, F, `-`, R, F, L, F, R, `+`, F, `+`, L, F, R, F, L))
     peanoCurve.addRule(R to listOf(R, F, L, F, R, `+`, F, `+`, L, F, R, F, L, `-`, F, `-`, R, F, L, F, R))
-    generateSVG(peanoCurve, listOf(L), 2)
+    //generateSVG(peanoCurve, listOf(L), 2)
+
+    val axial1 = Rewriter<TurtleCommand>()
+    axial1.addRule(F to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, F))
+    generateSVG(axial1, listOf(F), 5, TurtleParams(angleIncrementDegrees = 25.7))
+
+    val axial2 = Rewriter<TurtleCommand>()
+    axial2.addRule(F to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, `(`, F, `)`))
+    //generateSVG(axial2, listOf(F), 5, TurtleParams(angleIncrementDegrees = 20.0))
+
+    val axial4 = Rewriter<TurtleCommand>()
+    axial4.addRule(X to listOf(F, `(`, `+`, X, `)`, F, `(`, `-`, X, `)`, `+`, X, ))
+    axial4.addRule(F to listOf(F, F))
+    //generateSVG(axial4, listOf(X), 7, TurtleParams(angleIncrementDegrees = 20.0))
+
 }

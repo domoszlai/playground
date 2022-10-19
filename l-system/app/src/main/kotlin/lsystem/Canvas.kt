@@ -89,7 +89,7 @@ class Canvas (private val width: Int, private val height: Int) {
 
     private fun fmt(d: Double) : String{
         val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
-        df.maximumFractionDigits = 5;
+        df.maximumFractionDigits = 5
         return df.format(d)
     }
 
