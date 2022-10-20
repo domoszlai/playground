@@ -29,11 +29,26 @@ class TurtleRewriterNode(
         fun createForwardNonDrawingNode(name: String = "f"): TurtleRewriterNode =
             TurtleRewriterNode(name, listOf(PenUp, Forward))
 
-        fun createLeftNode(name: String = "+"): TurtleRewriterNode =
+        fun createTurnLeftNode(name: String = "+"): TurtleRewriterNode =
             TurtleRewriterNode(name, listOf(TurnLeft))
 
-        fun createRightNode(name: String = "-"): TurtleRewriterNode =
+        fun createTurnRightNode(name: String = "-"): TurtleRewriterNode =
             TurtleRewriterNode(name, listOf(TurnRight))
+
+        fun createTurnAroundNode(name: String = "|"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(TurnAround))
+
+        fun createPitchDownNode(name: String = "&"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PitchDown))
+
+        fun createPitchUpNode(name: String = "^"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(PitchUp))
+
+        fun createRollLeftNode(name: String = "\\"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(RollLeft))
+
+        fun createRollRightNode(name: String = "/"): TurtleRewriterNode =
+            TurtleRewriterNode(name, listOf(RollRight))
 
         fun createCustomNode(name: String): TurtleRewriterNode =
             TurtleRewriterNode(name, listOf())

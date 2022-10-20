@@ -1,5 +1,6 @@
 package lsystem
 
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -58,6 +59,61 @@ object TurnRight : TurtleCommand() { // Yaw
             it.copy(
                 H = rotate(it.H, it.L, params.angleIncrementRadians),
                 L = rotate(it.L, -it.H, params.angleIncrementRadians),
+            )
+        }
+    }
+}
+
+object TurnAround : TurtleCommand() { // Yaw
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            it.copy(
+                H = rotate(it.H, it.L, PI),
+                L = rotate(it.L, -it.H, PI),
+            )
+        }
+    }
+}
+
+object PitchDown : TurtleCommand() { // Yaw
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            it.copy(
+                H = rotate(it.H, it.U, params.angleIncrementRadians),
+                U = rotate(it.U, -it.H, params.angleIncrementRadians),
+            )
+        }
+    }
+}
+
+object PitchUp : TurtleCommand() { // Yaw
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            it.copy(
+                H = rotate(it.H, it.U, -params.angleIncrementRadians),
+                U = rotate(it.U, -it.H, -params.angleIncrementRadians),
+            )
+        }
+    }
+}
+
+object RollLeft : TurtleCommand() { // Yaw
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            it.copy(
+                L = rotate(it.L, it.U, params.angleIncrementRadians),
+                U = rotate(it.U, -it.L, params.angleIncrementRadians),
+            )
+        }
+    }
+}
+
+object RollRight : TurtleCommand() { // Yaw
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            it.copy(
+                L = rotate(it.L, it.U, -params.angleIncrementRadians),
+                U = rotate(it.U, -it.L, -params.angleIncrementRadians),
             )
         }
     }
