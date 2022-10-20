@@ -3,17 +3,31 @@ package lsystem
 import kotlin.math.min
 import kotlin.math.max
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 sealed interface DrawCommand
 data class MoveTo(val p: Point3D) : DrawCommand
 data class LineTo(val p: Point3D) : DrawCommand
 
 data class Point3D(val x: Double, val y: Double, val z: Double)
-operator fun Point3D.plus(o: Point3D) : Point3D = Vector3D(x+o.x, y+o.y, z+o.z)
+operator fun Point3D.plus(o: Point3D) : Point3D
+    = Vector3D(x+o.x, y+o.y, z+o.z)
+operator fun Point3D.minus(o: Point3D) : Point3D
+        = Vector3D(x-o.x, y-o.y, z-o.z)
+
 
 typealias Vector3D = Point3D
-operator fun Vector3D.times(m: Double) : Vector3D = Vector3D(x*m, y*m, z*m)
-operator fun Vector3D.unaryMinus() : Vector3D = Vector3D(-x, -y, -z)
+operator fun Vector3D.times(m: Double) : Vector3D
+    = Vector3D(x*m, y*m, z*m)
+operator fun Vector3D.unaryMinus() : Vector3D
+    = Vector3D(-x, -y, -z)
+fun Vector3D.cross(o: Vector3D) : Vector3D
+    = Vector3D(y*o.z - z*o.y,z*o.x - x*o.z,x*o.y - y*o.x)
+fun Vector3D.length() : Double = sqrt(x*x+y*y+z*z)
+fun Vector3D.normalize() : Vector3D {
+    val len = length()
+    return Vector3D(x / len, y / len, z / len)
+}
 
 data class Rectangle(
     val p1: Point3D,
