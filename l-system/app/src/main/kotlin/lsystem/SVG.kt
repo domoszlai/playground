@@ -7,6 +7,8 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+// SVG generation works with a projection of the XY plane of the 3D space
+
 private fun fmt(d: Double) : String{
     val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
     df.maximumFractionDigits = 5
@@ -17,8 +19,8 @@ private fun buildSVGPathString(path: List<DrawCommand>) : String {
     return buildString {
         for(cmd in path) {
             when (cmd) {
-                is MoveTo -> append("M${fmt(cmd.x)} ${fmt(cmd.y)} ")
-                is LineTo -> append("L${fmt(cmd.x)} ${fmt(cmd.y)} ")
+                is MoveTo -> append("M${fmt(cmd.p.x)} ${fmt(cmd.p.y)} ")
+                is LineTo -> append("L${fmt(cmd.p.x)} ${fmt(cmd.p.y)} ")
             }
         }
     }
@@ -28,15 +30,16 @@ private fun getMinimumLineLength(path: List<DrawCommand>) : Double {
 
     var minimumLength = Double.MAX_VALUE
 
-    path.fold(Pair(0.0, 0.0), fun (prevPoint, cmd) : Pair<Double, Double> {
+    path.fold(Point3D(0.0, 0.0, 0.0), fun (prevPoint, cmd) : Point3D {
         return when (cmd) {
-            is MoveTo -> Pair(cmd.x, cmd.y)
+            is MoveTo -> cmd.p
             is LineTo -> {
+
                 minimumLength = min(minimumLength,
-                    sqrt((prevPoint.first - cmd.x).pow(2) + (prevPoint.second - cmd.y).pow(2))
+                    sqrt((prevPoint.x - cmd.p.x).pow(2) + (prevPoint.y - cmd.p.y).pow(2))
                 )
 
-                Pair(cmd.x, cmd.y)
+                cmd.p
             }
         }
     })
@@ -55,7 +58,7 @@ fun Canvas.toSVG(width: Int? = null, height: Int? = null): String {
         append(" viewBox=\"0 0 ${fmt(boundaries.width)} ${fmt(boundaries.height)}\">\n")
         // Transform the image coordinate system to SVG (invert vertically)
         append("<g transform=\"translate(0,${fmt(boundaries.height)}) scale(1,-1)\">\n")
-        append("<g transform=\"translate(${fmt(-boundaries.x1)},${fmt(-boundaries.y1)})\">\n")
+        append("<g transform=\"translate(${fmt(-boundaries.p1.x)},${fmt(-boundaries.p1.y)})\">\n")
         append("<path d=\"${buildSVGPathString(path)}\"")
         append( " stroke=\"black\" stroke-width=\"${fmt(strokeWidth)}\" fill=\"none\"/>\n")
         append("</g>\n")

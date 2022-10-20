@@ -4,8 +4,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 data class TurtleState (
-    val x: Double = 0.0,
-    val y: Double = 0.0,
+    val p: Point3D = Point3D(0.0, 0.0, 0.0),
     val headingDegrees: Double = 90.0, // faces up, SVG coordinate system
     val drawing: Boolean = true
 ) {
@@ -54,8 +53,10 @@ object Right : TurtleCommand() {
 object Forward : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(
-            x = it.x + params.stepSize * cos(it.headingRadians),
-            y = it.y + params.stepSize * sin(it.headingRadians)
+            p = Point3D(
+                it.p.x + params.stepSize * cos(it.headingRadians),
+                it.p.y + params.stepSize * sin(it.headingRadians),
+                0.0)
         )}
     }
 }
@@ -79,7 +80,7 @@ class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canv
     private var sts = listOf<TurtleState>(initialState)
 
     init {
-        canvas.moveTo(initialState.x, initialState.y)
+        canvas.moveTo(initialState.p)
     }
 
     fun execute(commands: List<TurtleCommand>){
@@ -97,13 +98,13 @@ class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canv
             when(cmd) {
                 Forward ->
                     if (oldState.drawing) {
-                        canvas.lineTo(newState.x, newState.y)
+                        canvas.lineTo(newState.p)
                     } else {
-                        canvas.moveTo(newState.x, newState.y)
+                        canvas.moveTo(newState.p)
                     }
                 PopState ->
-                    if(oldState.x != newState.x || oldState.y != newState.y) {
-                        canvas.moveTo(newState.x, newState.y)
+                    if(oldState.p != newState.p) {
+                        canvas.moveTo(newState.p)
                     }
             }
         }

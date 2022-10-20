@@ -5,16 +5,18 @@ import kotlin.math.max
 import kotlin.math.abs
 
 sealed interface DrawCommand
-data class MoveTo(val x: Double, val y: Double) : DrawCommand
-data class LineTo(val x: Double, val y: Double) : DrawCommand
+data class MoveTo(val p: Point3D) : DrawCommand
+data class LineTo(val p: Point3D) : DrawCommand
+
+data class Point3D(val x: Double, val y: Double, val z: Double)
+typealias Vector3D = Point3D
 
 data class Rectangle(
-    val x1: Double,
-    val y1: Double,
-    val x2: Double,
-    val y2: Double) {
-    val width = abs(x2 - x1)
-    val height = abs(y2 - y1)
+    val p1: Point3D,
+    val p2: Point3D = p1) {
+    val width = abs(p2.x - p1.x)
+    val height = abs(p2.y - p1.y)
+    val depth = abs(p2.z - p1.z)
 }
 
 // Standard Cartesian coordinate system
@@ -22,14 +24,22 @@ class Canvas () {
 
     // From (0,0) unless first command is MoveTo
     var path = listOf<DrawCommand>()
-    var boundaries = Rectangle(0.0, 0.0, 0.0, 0.0)
+    var boundaries = Rectangle(Point3D(0.0,0.0,0.0))
 
-    fun moveTo(x: Double, y: Double){
-        appendToPath(MoveTo(x, y))
+    fun moveTo(x: Double, y: Double, z: Double){
+        appendToPath(MoveTo(Point3D(x, y, z)))
     }
 
-    fun lineTo(x: Double, y: Double){
-        appendToPath(LineTo(x, y))
+    fun moveTo(p: Point3D){
+        appendToPath(MoveTo(p))
+    }
+
+    fun lineTo(x: Double, y: Double, z: Double){
+        appendToPath(LineTo(Point3D(x, y, z)))
+    }
+
+    fun lineTo(p: Point3D){
+        appendToPath(LineTo(p))
     }
 
     private fun appendToPath(cmd: DrawCommand) {
@@ -39,19 +49,23 @@ class Canvas () {
 
     private fun updateBoundaries(cmd: DrawCommand) {
         if(path.size == 1 && cmd is MoveTo) {
-            boundaries = Rectangle(cmd.x, cmd.y, cmd.x, cmd.y)
+            boundaries = Rectangle(cmd.p)
         }
 
-        val (x,y) = when (cmd) {
-            is MoveTo -> Pair(cmd.x, cmd.y)
-            is LineTo -> Pair(cmd.x, cmd.y)
+        val p = when (cmd) {
+            is MoveTo -> cmd.p
+            is LineTo -> cmd.p
         }
 
         boundaries = Rectangle(
-            min(boundaries.x1, x),
-            min(boundaries.y1, y),
-            max(boundaries.x2, x),
-            max(boundaries.y2, y)
+            Point3D(
+                min(boundaries.p1.x, p.x),
+                min(boundaries.p1.y, p.y),
+                min(boundaries.p1.z, p.z)),
+            Point3D(
+                max(boundaries.p2.x, p.x),
+                max(boundaries.p2.y, p.y),
+                max(boundaries.p2.z, p.z))
         )
     }
 }
