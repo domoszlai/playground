@@ -58,4 +58,7 @@ fun main() {
     axial4.addRule(X to listOf(F, `(`, `+`, X, `)`, F, `(`, `-`, X, `)`, `+`, X, ))
     axial4.addRule(F to listOf(F, F))
     generateSVG(axial4, listOf(X), 7, TurtleParams(angleIncrementDegrees = 20.0))
+
+    val test = Rewriter<TurtleRewriterNode>()
+    //generateSVG(axial4, listOf(F,F,F,`-`,F,F,`-`,F,`-`,F,`+`,F,`+`,F,F,`-`,F,`-`,F,F,F), 1)
 }

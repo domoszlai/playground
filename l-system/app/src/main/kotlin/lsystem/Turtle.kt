@@ -5,11 +5,11 @@ import kotlin.math.sin
 
 data class TurtleState (
     val p: Point3D = Point3D(0.0, 0.0, 0.0),
-    val headingDegrees: Double = 90.0, // faces up, SVG coordinate system
+    val H: Vector3D = Vector3D(0.0, 1.0, 0.0), // heading, faces up
+    val L: Vector3D = Vector3D(1.0, 0.0, 0.0), // left
+    val U: Vector3D = Vector3D(0.0, 0.0, 1.0), // up
     val drawing: Boolean = true
-) {
-    val headingRadians = Math.toRadians(headingDegrees)
-}
+)
 
 data class TurtleParams (
     val stepSize: Double = 1.0,
@@ -20,6 +20,9 @@ data class TurtleParams (
 
 sealed class TurtleCommand {
     abstract fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
+
+    protected fun rotate(v: Vector3D, pv: Vector3D, angleRadian: Double)
+        = v * cos(angleRadian) + pv * sin(angleRadian)
 
     override fun equals(other: Any?): Boolean {
         return this === other
@@ -38,25 +41,32 @@ object PenUp : TurtleCommand() {
     }
 }
 
-object Left : TurtleCommand() {
+object TurnLeft : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
-        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees + params.angleIncrementDegrees)}
+        return sts.updateTop {
+            it.copy(
+                H = rotate(it.H, it.L, -params.angleIncrementRadians),
+                L = rotate(it.L, -it.H, -params.angleIncrementRadians),
+            )
+        }
     }
 }
 
-object Right : TurtleCommand() {
+object TurnRight : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
-        return sts.updateTop { it.copy(headingDegrees = it.headingDegrees - params.angleIncrementDegrees)}
+        return sts.updateTop {
+            it.copy(
+                H = rotate(it.H, it.L, params.angleIncrementRadians),
+                L = rotate(it.L, -it.H, params.angleIncrementRadians),
+            )
+        }
     }
 }
 
 object Forward : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(
-            p = Point3D(
-                it.p.x + params.stepSize * cos(it.headingRadians),
-                it.p.y + params.stepSize * sin(it.headingRadians),
-                0.0)
+            p = it.p + it.H * params.stepSize
         )}
     }
 }

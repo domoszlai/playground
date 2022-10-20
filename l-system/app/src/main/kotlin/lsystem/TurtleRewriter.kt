@@ -30,10 +30,10 @@ class TurtleRewriterNode(
             TurtleRewriterNode(name, listOf(PenUp, Forward))
 
         fun createLeftNode(name: String = "+"): TurtleRewriterNode =
-            TurtleRewriterNode(name, listOf(Left))
+            TurtleRewriterNode(name, listOf(TurnLeft))
 
         fun createRightNode(name: String = "-"): TurtleRewriterNode =
-            TurtleRewriterNode(name, listOf(Right))
+            TurtleRewriterNode(name, listOf(TurnRight))
 
         fun createCustomNode(name: String): TurtleRewriterNode =
             TurtleRewriterNode(name, listOf())

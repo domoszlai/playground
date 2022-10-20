@@ -9,7 +9,11 @@ data class MoveTo(val p: Point3D) : DrawCommand
 data class LineTo(val p: Point3D) : DrawCommand
 
 data class Point3D(val x: Double, val y: Double, val z: Double)
+operator fun Point3D.plus(o: Point3D) : Point3D = Vector3D(x+o.x, y+o.y, z+o.z)
+
 typealias Vector3D = Point3D
+operator fun Vector3D.times(m: Double) : Vector3D = Vector3D(x*m, y*m, z*m)
+operator fun Vector3D.unaryMinus() : Vector3D = Vector3D(-x, -y, -z)
 
 data class Rectangle(
     val p1: Point3D,
