@@ -3,12 +3,12 @@ package lsystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class NodeRewriting {
+class NodeRewritingTest {
 
     class LNode : TurtleRewriterNode()
     class RNode : TurtleRewriterNode()
 
-    val F = Forward()
+    val F = ForwardDrawing()
     val L = LNode()
     val R = RNode()
     val `+` = TurnLeft()

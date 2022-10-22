@@ -2,6 +2,7 @@ package lsystem
 
 import lsystem.turtle.Turtle
 import lsystem.turtle.TurtleParams
+import lsystem.turtle.output.toObj
 import lsystem.turtle.output.toSVG
 import kotlin.reflect.KClass
 
@@ -17,6 +18,17 @@ fun generateSVG(
     val turtle = Turtle(params)
     turtle.execute(rewriter, axiom, n)
     return turtle.canvas.toSVG()
+}
+
+fun generateOBJ(
+    rewriter: ParametricRewriter<TurtleRewriterNode>,
+    axiom: List<TurtleRewriterNode>,
+    n: Int,
+    params: TurtleParams = TurtleParams()
+) : String {
+    val turtle = Turtle(params)
+    turtle.execute(rewriter, axiom, n)
+    return turtle.canvas.toObj()
 }
 
 fun getResourceAsText(path: String): String? =

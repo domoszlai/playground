@@ -5,12 +5,12 @@ import kotlin.test.assertEquals
 
 import lsystem.turtle.TurtleParams
 
-class EdgeRewriting {
+class EdgeRewritingTest {
 
-    class ForwardLeft : Forward()
-    class ForwardRight : Forward()
+    class ForwardLeft : ForwardDrawing()
+    class ForwardRight : ForwardDrawing()
 
-    val F = Forward()
+    val F = ForwardDrawing()
     val Fl = ForwardLeft()
     val Fr = ForwardRight()
     val `+` = TurnLeft()

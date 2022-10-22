@@ -5,11 +5,11 @@ import kotlin.test.assertEquals
 
 import lsystem.turtle.TurtleParams
 
-class BracketedRewriting {
+class BracketedRewritingTest {
 
     class XNode : TurtleRewriterNode()
 
-    val F = Forward()
+    val F = ForwardDrawing()
     val X = XNode()
     val `+` = TurnLeft()
     val `-` = TurnRight()
@@ -20,7 +20,7 @@ class BracketedRewriting {
 
         val r = ParametricRewriter<TurtleRewriterNode>()
         r.addRule(F.symbol to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, F))
-        val svg = generateSVG(r, listOf(`F`), 5, TurtleParams(angleIncrementDegrees = 25.7))
+        val svg = generateSVG(r, listOf(F), 5, TurtleParams(angleIncrementDegrees = 25.7))
 
         //assertEquals("", svg)
         assertEquals(getResourceAsText("/bracketed/axial1.svg")?.deleteWhitespace(), svg.deleteWhitespace())
@@ -30,7 +30,7 @@ class BracketedRewriting {
 
         val r = ParametricRewriter<TurtleRewriterNode>()
         r.addRule(F.symbol to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, `(`, F, `)`))
-        val svg = generateSVG(r, listOf(`F`), 5, TurtleParams(angleIncrementDegrees = 20.0))
+        val svg = generateSVG(r, listOf(F), 5, TurtleParams(angleIncrementDegrees = 20.0))
 
         assertEquals(getResourceAsText("/bracketed/axial2.svg")?.deleteWhitespace(), svg.deleteWhitespace())
     }
@@ -39,7 +39,7 @@ class BracketedRewriting {
 
         val r = ParametricRewriter<TurtleRewriterNode>()
         r.addRule(F.symbol to listOf(F, F, `-`, `(`, `-`, F, `+`, F,  `+`, F, `)`,`+`, `(`, `+`, F, `-`, F, `-`, F, `)`))
-        val svg = generateSVG(r, listOf(`F`), 4, TurtleParams(angleIncrementDegrees = 22.5))
+        val svg = generateSVG(r, listOf(F), 4, TurtleParams(angleIncrementDegrees = 22.5))
 
         assertEquals(getResourceAsText("/bracketed/axial3.svg")?.deleteWhitespace(), svg.deleteWhitespace())
     }
