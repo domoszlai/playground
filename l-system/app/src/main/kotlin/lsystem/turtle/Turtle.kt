@@ -17,9 +17,7 @@ data class TurtleState (
 data class TurtleParams (
     val stepSize: Double = 1.0,
     val angleIncrementDegrees: Double = 90.0
-) {
-    val angleIncrementRadians = Math.toRadians(angleIncrementDegrees)
-}
+)
 
 sealed class TurtleCommand {
     abstract fun execute (params: TurtleParams, sts: Stack<TurtleState>) : Stack<TurtleState>
@@ -32,41 +30,43 @@ sealed class TurtleCommand {
     }
 }
 
-object PenDown : TurtleCommand() {
+class PenDown : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = true) }
     }
 }
 
-object PenUp : TurtleCommand() {
+class PenUp : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(drawing = false) }
     }
 }
 
-object TurnLeft : TurtleCommand() { // Yaw
+class TurnLeft(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                H = rotate(it.H, it.L, -params.angleIncrementRadians),
-                L = rotate(it.L, -it.H, -params.angleIncrementRadians),
+                H = rotate(it.H, it.L, angle),
+                L = rotate(it.L, -it.H, angle),
             )
         }
     }
 }
 
-object TurnRight : TurtleCommand() { // Yaw
+class TurnRight(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                H = rotate(it.H, it.L, params.angleIncrementRadians),
-                L = rotate(it.L, -it.H, params.angleIncrementRadians),
+                H = rotate(it.H, it.L, angle),
+                L = rotate(it.L, -it.H, angle),
             )
         }
     }
 }
 
-object TurnAround : TurtleCommand() { // Yaw
+class TurnAround : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
             it.copy(
@@ -77,66 +77,70 @@ object TurnAround : TurtleCommand() { // Yaw
     }
 }
 
-object PitchDown : TurtleCommand() { // Yaw
+class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                H = rotate(it.H, it.U, params.angleIncrementRadians),
-                U = rotate(it.U, -it.H, params.angleIncrementRadians),
+                H = rotate(it.H, it.U, angle),
+                U = rotate(it.U, -it.H, angle),
             )
         }
     }
 }
 
-object PitchUp : TurtleCommand() { // Yaw
+class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                H = rotate(it.H, it.U, -params.angleIncrementRadians),
-                U = rotate(it.U, -it.H, -params.angleIncrementRadians),
+                H = rotate(it.H, it.U, angle),
+                U = rotate(it.U, -it.H, angle),
             )
         }
     }
 }
 
-object RollLeft : TurtleCommand() { // Yaw
+class RollLeft(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                L = rotate(it.L, it.U, params.angleIncrementRadians),
-                U = rotate(it.U, -it.L, params.angleIncrementRadians),
+                L = rotate(it.L, it.U, angle),
+                U = rotate(it.U, -it.L, angle),
             )
         }
     }
 }
 
-object RollRight : TurtleCommand() { // Yaw
+class RollRight(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
-                L = rotate(it.L, it.U, -params.angleIncrementRadians),
-                U = rotate(it.U, -it.L, -params.angleIncrementRadians),
+                L = rotate(it.L, it.U, angle),
+                U = rotate(it.U, -it.L, angle),
             )
         }
     }
 }
 
-object Forward : TurtleCommand() {
+class Forward(private val stepSize: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop { it.copy(
-            p = it.p + it.H * params.stepSize
+            p = it.p + it.H * (stepSize ?: params.stepSize)
         )}
     }
 }
 
-object PushState : TurtleCommand() {
+class PushState : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         val top = sts.peek()
         return if(top != null) sts.push(top) else sts
     }
 }
 
-object PopState : TurtleCommand() {
+class PopState : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.pop()
     }
@@ -164,13 +168,13 @@ class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canv
 
         if(oldState != null && newState != null){
             when(cmd) {
-                Forward ->
+                is Forward ->
                     if (oldState.drawing) {
                         canvas.lineTo(newState.p)
                     } else {
                         canvas.moveTo(newState.p)
                     }
-                PopState ->
+                is PopState ->
                     if(oldState.p != newState.p) {
                         canvas.moveTo(newState.p)
                     }

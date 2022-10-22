@@ -30,14 +30,21 @@ open class TurtleRewriterNode(
     val turtleCommands: List<TurtleCommand> = listOf()
 )
 
-open class ForwardDrawing() : TurtleRewriterNode(listOf(TPenDown, TForward))
-open class ForwardNonDrawing() : TurtleRewriterNode(listOf(TPenUp, TForward))
-open class TurnLeft() : TurtleRewriterNode(listOf(TTurnLeft))
-open class TurnRight() : TurtleRewriterNode(listOf(TTurnRight))
-open class TurnAround() : TurtleRewriterNode(listOf(TTurnAround))
-open class RollLeft() : TurtleRewriterNode(listOf(TRollLeft))
-open class RollRight() : TurtleRewriterNode(listOf(TRollRight))
-open class PitchDown() : TurtleRewriterNode(listOf(TPitchDown))
-open class PitchUp() : TurtleRewriterNode(listOf(TPitchUp))
-open class PushState() : TurtleRewriterNode(listOf(TPushState))
-open class PopState() : TurtleRewriterNode(listOf(TPopState))
+open class ForwardDrawing(private val stepSize: Double? = null) :
+    TurtleRewriterNode(listOf(TPenDown(), TForward(stepSize)))
+open class ForwardNonDrawing() : TurtleRewriterNode(listOf(TPenUp(), TForward()))
+open class TurnLeft(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TTurnLeft(angleIncrementDegrees)))
+open class TurnRight(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TTurnRight(angleIncrementDegrees)))
+open class TurnAround() : TurtleRewriterNode(listOf(TTurnAround()))
+open class RollLeft(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TRollLeft(angleIncrementDegrees)))
+open class RollRight(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TRollRight(angleIncrementDegrees)))
+open class PitchDown(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TPitchDown(angleIncrementDegrees)))
+open class PitchUp(private val angleIncrementDegrees: Double? = null) :
+    TurtleRewriterNode(listOf(TPitchUp(angleIncrementDegrees)))
+open class PushState() : TurtleRewriterNode(listOf(TPushState()))
+open class PopState() : TurtleRewriterNode(listOf(TPopState()))

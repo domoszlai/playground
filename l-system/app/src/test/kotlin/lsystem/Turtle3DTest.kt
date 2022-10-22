@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 
 class Turtle3DTest {
 
-    class XNode : TurtleRewriterNode()
     class ANode : TurtleRewriterNode()
     class BNode : TurtleRewriterNode()
     class CNode : TurtleRewriterNode()

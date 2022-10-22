@@ -34,6 +34,5 @@ fun generateOBJ(
 fun getResourceAsText(path: String): String? =
     object {}.javaClass.getResource(path)?.readText()
 
-fun String.deleteWhitespace() : String {
-    return replace("\\s".toRegex(), "")
-}
+fun String.deleteWhitespace() : String = replace("\\s".toRegex(), "")
+
