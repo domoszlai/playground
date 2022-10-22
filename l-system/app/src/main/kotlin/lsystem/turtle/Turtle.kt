@@ -1,8 +1,10 @@
-package lsystem
+package lsystem.turtle
 
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+
+import lsystem.*
 
 data class TurtleState (
     val p: Point3D = Point3D(0.0, 0.0, 0.0),

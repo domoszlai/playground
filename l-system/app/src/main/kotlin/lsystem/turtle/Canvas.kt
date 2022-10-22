@@ -1,4 +1,4 @@
-package lsystem
+package lsystem.turtle
 
 import kotlin.math.min
 import kotlin.math.max

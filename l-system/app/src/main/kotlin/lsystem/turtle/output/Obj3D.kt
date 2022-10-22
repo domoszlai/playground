@@ -1,5 +1,6 @@
-package lsystem
+package lsystem.turtle.output
 
+import lsystem.turtle.*
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -69,6 +70,7 @@ fun generateCylindricalMesh(p1: Point3D, p2: Point3D, r: Double): Mesh {
     return Mesh(vertices, faces)
 }
 
+// https://nccastaff.bournemouth.ac.uk/jmacey/OldWeb/RobTheBloke/www/source/obj.html
 fun Canvas.toObj(): String {
     // Heuristic to get some proper stroke width for any arbitrary detailed drawings
     val strokeWidth = getMinimumLineLength(path)/10

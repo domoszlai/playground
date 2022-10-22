@@ -1,5 +1,6 @@
-package lsystem
+package lsystem.turtle.output
 
+import lsystem.turtle.*
 import kotlin.math.cos
 import kotlin.math.sin
 

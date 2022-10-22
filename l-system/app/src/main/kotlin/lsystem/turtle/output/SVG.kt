@@ -1,5 +1,6 @@
-package lsystem
+package lsystem.turtle.output
 
+import lsystem.turtle.*
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -63,6 +64,6 @@ fun Canvas.toSVG(width: Int? = null, height: Int? = null): String {
         append( " stroke=\"black\" stroke-width=\"${fmt(strokeWidth)}\" fill=\"none\"/>\n")
         append("</g>\n")
         append("</g>\n")
-        append("</svg>\n")
+        append("</svg>")
     }
 }
