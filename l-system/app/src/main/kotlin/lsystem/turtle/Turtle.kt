@@ -8,9 +8,9 @@ import lsystem.*
 
 data class TurtleState (
     val p: Point3D = Point3D(0.0, 0.0, 0.0),
-    val H: Vector3D = Vector3D(0.0, 1.0, 0.0), // heading
+    val H: Vector3D = Vector3D(0.0, 0.0, 1.0), // heading
     val L: Vector3D = Vector3D(1.0, 0.0, 0.0), // left
-    val U: Vector3D = Vector3D(0.0, 0.0, 1.0), // up
+    val U: Vector3D = Vector3D(0.0, 1.0, 0.0), // up
     val drawing: Boolean = true,
     val lineWidth: Double
 )
@@ -88,7 +88,7 @@ class TurnAround : TurtleCommand() {
 class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
                 H = rotate(it.H, it.U, angle),
                 U = rotate(it.U, -it.H, angle),
@@ -100,7 +100,7 @@ class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleComma
 class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
                 H = rotate(it.H, it.U, angle),
                 U = rotate(it.U, -it.H, angle),
@@ -134,14 +134,14 @@ class RollRight(private val angleIncrementDegrees: Double? = null) : TurtleComma
 }
 
 // Rolls the turtle so that L is brought to horizontal position
-class RollUp() : TurtleCommand() {
+class RollToHorizontal() : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val V = Vector3D(0.0, 1.0, 0.0) // direction opposite to gravity
-            val newL = V.cross(it.H).normalize()
+            val V = Vector3D(0.0, 0.0, 1.0) // direction opposite to gravity
+            val n = V.cross(it.H).normalize()
             it.copy(
-                L = newL,
-                U = it.H.cross(it.L),
+                L = V.cross(it.H).normalize(),
+                U = it.H.cross(n),
             )
         }
     }

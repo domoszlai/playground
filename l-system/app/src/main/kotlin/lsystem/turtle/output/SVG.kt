@@ -5,7 +5,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-// SVG generation works with a projection of the XY plane of the 3D space
+// SVG generation works with a projection of the XZ plane of the 3D space
 
 private fun fmt(d: Double) : String{
     val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
@@ -25,7 +25,7 @@ private fun buildSVGPath(path: List<DrawCommand>) : String {
                     if(prevLineWidth == 0.0) {
                         prevPoint = cmd.p
                     }else {
-                        append("M${fmt(cmd.p.x)} ${fmt(cmd.p.y)} ")
+                        append("M${fmt(cmd.p.x)} ${fmt(cmd.p.z)} ")
                     }
                 is LineTo -> {
                     if (prevLineWidth != cmd.lineWidth) {
@@ -36,10 +36,10 @@ private fun buildSVGPath(path: List<DrawCommand>) : String {
                         inPath = true
                         prevLineWidth = cmd.lineWidth
 
-                        append("<path d=\"M${fmt(prevPoint.x)} ${fmt(prevPoint.y)}")
+                        append("<path d=\"M${fmt(prevPoint.x)} ${fmt(prevPoint.z)}")
                     }
 
-                    append(" L${fmt(cmd.p.x)} ${fmt(cmd.p.y)}")
+                    append(" L${fmt(cmd.p.x)} ${fmt(cmd.p.z)}")
                 }
             }
         }
@@ -55,10 +55,10 @@ fun Canvas.toSVG(width: Int? = null, height: Int? = null): String {
         append("<svg")
         if(height != null) append(" height=\"$height\"")
         if(width != null) append(" width=\"$width\"")
-        append(" viewBox=\"0 0 ${fmt(boundaries.width)} ${fmt(boundaries.height)}\">\n")
+        append(" viewBox=\"0 0 ${fmt(boundaries.width)} ${fmt(boundaries.depth)}\">\n")
         // Transform the image coordinate system to SVG (invert vertically)
-        append("<g transform=\"translate(0,${fmt(boundaries.height)}) scale(1,-1)\">\n")
-        append("<g transform=\"translate(${fmt(-boundaries.p1.x)},${fmt(-boundaries.p1.y)})\">\n")
+        append("<g transform=\"translate(0,${fmt(boundaries.depth)}) scale(1,-1)\">\n")
+        append("<g transform=\"translate(${fmt(-boundaries.p1.x)},${fmt(-boundaries.p1.z)})\">\n")
         append("${buildSVGPath(path)}\n")
         append("</g>\n")
         append("</g>\n")

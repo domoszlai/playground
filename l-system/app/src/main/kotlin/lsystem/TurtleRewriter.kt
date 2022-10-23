@@ -16,7 +16,7 @@ import lsystem.turtle.PitchDown as TPitchDown
 import lsystem.turtle.PitchUp as TPitchUp
 import lsystem.turtle.RollLeft as TRollLeft
 import lsystem.turtle.RollRight as TRollRight
-import lsystem.turtle.RollUp as TRollUp
+import lsystem.turtle.RollToHorizontal as TRollToHorizontal
 
 fun Turtle.execute(
     rewriter: ParametricRewriter<TurtleRewriterNode>,
@@ -44,7 +44,7 @@ open class RollLeft(private val angleIncrementDegrees: Double? = null) :
     TurtleRewriterNode(listOf(TRollLeft(angleIncrementDegrees)))
 open class RollRight(private val angleIncrementDegrees: Double? = null) :
     TurtleRewriterNode(listOf(TRollRight(angleIncrementDegrees)))
-open class RollUp() : TurtleRewriterNode(listOf(TRollUp()))
+open class RollToHorizontal() : TurtleRewriterNode(listOf(TRollToHorizontal()))
 open class PitchDown(private val angleIncrementDegrees: Double? = null) :
     TurtleRewriterNode(listOf(TPitchDown(angleIncrementDegrees)))
 open class PitchUp(private val angleIncrementDegrees: Double? = null) :

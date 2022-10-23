@@ -5,9 +5,6 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 import kotlin.math.PI
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 private fun fmt(d: Double) : String{
     val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
