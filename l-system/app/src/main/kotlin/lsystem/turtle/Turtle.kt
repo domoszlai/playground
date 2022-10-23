@@ -88,7 +88,7 @@ class TurnAround : TurtleCommand() {
 class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
                 H = rotate(it.H, it.U, angle),
                 U = rotate(it.U, -it.H, angle),
@@ -100,7 +100,7 @@ class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleComma
 class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
             it.copy(
                 H = rotate(it.H, it.U, angle),
                 U = rotate(it.U, -it.H, angle),
@@ -138,10 +138,10 @@ class RollToHorizontal() : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
             val V = Vector3D(0.0, 0.0, 1.0) // direction opposite to gravity
-            val n = V.cross(it.H).normalize()
+            //val n = V.cross(it.H).normalize()
             it.copy(
                 L = V.cross(it.H).normalize(),
-                U = it.H.cross(n),
+                U = it.H.cross(it.L),
             )
         }
     }

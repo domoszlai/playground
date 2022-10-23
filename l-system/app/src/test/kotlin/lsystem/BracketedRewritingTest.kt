@@ -22,7 +22,6 @@ class BracketedRewritingTest {
         r.addRule(F.symbol to listOf(F, `(`, `+`, F, `)`, F, `(`, `-`, F, `)`, F))
         val svg = generateSVG(r, listOf(F), 5, TurtleParams(angleIncrementDegrees = 25.7))
 
-        //assertEquals("", svg)
         assertEquals(getResourceAsText("/bracketed/axial1.svg")?.deleteWhitespace(), svg.deleteWhitespace())
     }
 
