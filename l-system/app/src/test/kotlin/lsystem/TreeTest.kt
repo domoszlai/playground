@@ -1,7 +1,6 @@
 package lsystem
 
 import org.junit.Test
-import java.io.File
 import kotlin.test.assertEquals
 
 class `3DTurtleTest` {
@@ -23,17 +22,6 @@ class `3DTurtleTest` {
     val `^` = PitchUp()
     val `Rf` = RollLeft()
     val `Rr` = RollRight()
-    val `(` = PushState()
-    val `)` = PopState()
-
-    @Test
-    fun basicMovement() {
-
-        val r = ParametricRewriter<TurtleRewriterNode>()
-        val obj = generateOBJ(r, listOf(F, F, F, `-`, F, F, `^`, F, `(`, `+`, F, `)`, Rr, `+`, F, `&`, F), 1)
-
-        assertEquals(getResourceAsText("/turtle/3d/basicMovement.obj"), obj)
-    }
 
     @Test
     fun hilbertCurve() {
@@ -47,5 +35,4 @@ class `3DTurtleTest` {
 
         assertEquals(getResourceAsText("/turtle/3d/hilbert.obj"), obj)
     }
-
 }

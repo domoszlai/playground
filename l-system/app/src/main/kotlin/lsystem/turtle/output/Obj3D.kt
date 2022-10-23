@@ -15,33 +15,12 @@ private fun fmt(d: Double) : String{
     return df.format(d)
 }
 
-private fun getMinimumLineLength(path: List<DrawCommand>) : Double {
-
-    var minimumLength = Double.MAX_VALUE
-
-    path.fold(Point3D(0.0, 0.0, 0.0), fun (prevPoint, cmd) : Point3D {
-        return when (cmd) {
-            is MoveTo -> cmd.p
-            is LineTo -> {
-
-                minimumLength = min(minimumLength,
-                    sqrt((prevPoint.x - cmd.p.x).pow(2) + (prevPoint.y - cmd.p.y).pow(2)+ (prevPoint.z - cmd.p.z).pow(2))
-                )
-
-                cmd.p
-            }
-        }
-    })
-
-    return minimumLength
-}
-
 typealias Vertex = Point3D
 data class Face(val vertexIndexes: List<Int>)
 data class Mesh(val vertices: List<Vertex>, val faces: List<Face>)
 
 fun generateCylindricalMesh(p1: Point3D, p2: Point3D, r: Double): Mesh {
-    val nrp = 50
+    val nrp = 10
 
     val n = p1 - p2
     val c1 = Circle(p1, r, n)
@@ -72,9 +51,6 @@ fun generateCylindricalMesh(p1: Point3D, p2: Point3D, r: Double): Mesh {
 
 // https://nccastaff.bournemouth.ac.uk/jmacey/OldWeb/RobTheBloke/www/source/obj.html
 fun Canvas.toObj(): String {
-    // Heuristic to get some proper stroke width for any arbitrary detailed drawings
-    val strokeWidth = getMinimumLineLength(path)/10
-
     var startPoint = Point3D(0.0, 0.0, 0.0)
 
     var vertices = mutableListOf<Vertex>()
@@ -86,7 +62,7 @@ fun Canvas.toObj(): String {
                 cmd.p
             }
             is LineTo -> {
-                val mesh = generateCylindricalMesh(startPoint, cmd.p, strokeWidth / 2)
+                val mesh = generateCylindricalMesh(startPoint, cmd.p, cmd.lineWidth/2)
 
                 val idxShift = vertices.size
                 vertices.addAll(mesh.vertices)

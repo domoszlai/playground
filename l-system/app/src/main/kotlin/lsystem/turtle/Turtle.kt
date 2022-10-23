@@ -44,6 +44,12 @@ class PenUp : TurtleCommand() {
     }
 }
 
+class SetLineWidth(private val lineWidth: Double) : TurtleCommand() {
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop { it.copy(lineWidth = lineWidth) }
+    }
+}
+
 class TurnLeft(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
@@ -79,19 +85,7 @@ class TurnAround : TurtleCommand() {
     }
 }
 
-class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
-    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
-        return sts.updateTop {
-            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
-            it.copy(
-                H = rotate(it.H, it.U, angle),
-                U = rotate(it.U, -it.H, angle),
-            )
-        }
-    }
-}
-
-class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
+class PitchDown(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
             val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
@@ -103,7 +97,31 @@ class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand
     }
 }
 
-class RollLeft(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
+class PitchUp(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            it.copy(
+                H = rotate(it.H, it.U, angle),
+                U = rotate(it.U, -it.H, angle),
+            )
+        }
+    }
+}
+
+class RollLeft(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
+    override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
+        return sts.updateTop {
+            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            it.copy(
+                L = rotate(it.L, it.U, angle),
+                U = rotate(it.U, -it.L, angle),
+            )
+        }
+    }
+}
+
+class RollRight(private val angleIncrementDegrees: Double? = null) : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
             val angle = Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
@@ -115,13 +133,15 @@ class RollLeft(private val angleIncrementDegrees: Double? = null) : TurtleComman
     }
 }
 
-class RollRight(private val angleIncrementDegrees: Double? = null) : TurtleCommand() { // Yaw
+// Rolls the turtle so that L is brought to horizontal position
+class RollUp() : TurtleCommand() {
     override fun execute(params: TurtleParams, sts: Stack<TurtleState>): Stack<TurtleState> {
         return sts.updateTop {
-            val angle = -Math.toRadians(angleIncrementDegrees ?: params.angleIncrementDegrees)
+            val V = Vector3D(0.0, 1.0, 0.0) // direction opposite to gravity
+            val newL = V.cross(it.H).normalize()
             it.copy(
-                L = rotate(it.L, it.U, angle),
-                U = rotate(it.U, -it.L, angle),
+                L = newL,
+                U = it.H.cross(it.L),
             )
         }
     }
