@@ -8,15 +8,17 @@ import lsystem.*
 
 data class TurtleState (
     val p: Point3D = Point3D(0.0, 0.0, 0.0),
-    val H: Vector3D = Vector3D(0.0, 1.0, 0.0), // heading, faces up
+    val H: Vector3D = Vector3D(0.0, 1.0, 0.0), // heading
     val L: Vector3D = Vector3D(1.0, 0.0, 0.0), // left
     val U: Vector3D = Vector3D(0.0, 0.0, 1.0), // up
-    val drawing: Boolean = true
+    val drawing: Boolean = true,
+    val lineWidth: Double
 )
 
 data class TurtleParams (
     val stepSize: Double = 1.0,
-    val angleIncrementDegrees: Double = 90.0
+    val angleIncrementDegrees: Double = 90.0,
+    val lineWidth: Double = 1.0 / 10.0
 )
 
 sealed class TurtleCommand {
@@ -148,7 +150,7 @@ class PopState : TurtleCommand() {
 
 class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canvas = Canvas()) {
 
-    private val initialState = TurtleState()
+    private val initialState = TurtleState(lineWidth = params.lineWidth)
     private var sts = listOf<TurtleState>(initialState)
 
     init {
@@ -170,7 +172,7 @@ class Turtle(private val params: TurtleParams = TurtleParams(), val canvas: Canv
             when(cmd) {
                 is Forward ->
                     if (oldState.drawing) {
-                        canvas.lineTo(newState.p)
+                        canvas.lineTo(newState.p, oldState.lineWidth)
                     } else {
                         canvas.moveTo(newState.p)
                     }

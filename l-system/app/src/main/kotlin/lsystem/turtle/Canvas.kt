@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 
 sealed interface DrawCommand
 data class MoveTo(val p: Point3D) : DrawCommand
-data class LineTo(val p: Point3D) : DrawCommand
+data class LineTo(val p: Point3D, val lineWidth: Double) : DrawCommand
 
 data class Point3D(val x: Double, val y: Double, val z: Double)
 operator fun Point3D.plus(o: Point3D) : Point3D
@@ -52,12 +52,8 @@ class Canvas () {
         appendToPath(MoveTo(p))
     }
 
-    fun lineTo(x: Double, y: Double, z: Double){
-        appendToPath(LineTo(Point3D(x, y, z)))
-    }
-
-    fun lineTo(p: Point3D){
-        appendToPath(LineTo(p))
+    fun lineTo(p: Point3D, lineWidth: Double){
+        appendToPath(LineTo(p, lineWidth))
     }
 
     private fun appendToPath(cmd: DrawCommand) {

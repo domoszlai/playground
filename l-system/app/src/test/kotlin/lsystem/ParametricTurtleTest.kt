@@ -25,7 +25,8 @@ class ParametricTurtleTest {
             F(it.x * p, 2), `+`, F(it.x * h, 1), `-`, `-`, F(it.x * h, 1), `+`, F(it.x * q, 0))})
         r.addRule(F::class, {it.t > 0}, {listOf(F(it.x, it.t - 1))})
 
-        val svg = generateSVG(r, listOf(F(1.0, 0)), 10, TurtleParams(angleIncrementDegrees = 86.0))
+        val svg = generateSVG(r, listOf(F(1.0, 0)), 10,
+            TurtleParams(angleIncrementDegrees = 86.0, lineWidth = 0.001))
 
         assertEquals(getResourceAsText("/turtle/parametric/rowOfTrees.svg")?.deleteWhitespace(), svg.deleteWhitespace())
     }
@@ -49,7 +50,8 @@ class ParametricTurtleTest {
             `(`, `+`, A(it.s / R), `)`,
             `(`, `-`, A(it.s / R), `)`)})
 
-        val svg = generateSVG(r, listOf(A(1.0)), 10, TurtleParams(angleIncrementDegrees = 86.0))
+        val svg = generateSVG(r, listOf(A(1.0)), 10,
+            TurtleParams(angleIncrementDegrees = 86.0, lineWidth = 0.005))
 
         assertEquals(getResourceAsText("/turtle/parametric/noname1.svg")?.deleteWhitespace(), svg.deleteWhitespace())
     }
