@@ -3,7 +3,7 @@ package lsystem
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class Turtle3DTest {
+class `3DTurtleTest` {
 
     class ANode : TurtleRewriterNode()
     class BNode : TurtleRewriterNode()
@@ -33,6 +33,6 @@ class Turtle3DTest {
         r.addRule(D.symbol to listOf(`|`, C, F, B, `-`, F, `+`, B, `|`, F, A, `&`, F, `^`, A, `&`, `&`, F, B, `-`, F, `+`, B, `|`, F, C, Rr, Rr))
         val obj = generateOBJ(r, listOf(A), 3)
 
-        assertEquals(getResourceAsText("/3d/hilbert.obj"), obj)
+        assertEquals(getResourceAsText("/turtle/3d/hilbert.obj"), obj)
     }
 }
