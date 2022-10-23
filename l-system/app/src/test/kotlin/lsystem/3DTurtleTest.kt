@@ -60,9 +60,7 @@ class `3DTurtleTest` {
         r.addRule(C.symbol to listOf(`|`, D, `^`, `|`, F, `^`, B, `-`, F, `+`, C, `^`, F, `^`, A, `&`, `&`, F, A, `&`, F, `^`, C, `+`, F, `+`, B, `^`, F, `^`, D, Rr, Rr))
         r.addRule(D.symbol to listOf(`|`, C, F, B, `-`, F, `+`, B, `|`, F, A, `&`, F, `^`, A, `&`, `&`, F, B, `-`, F, `+`, B, `|`, F, C, Rr, Rr))
         val obj = generateOBJ(r, listOf(A), 3)
-
-        File("/users/dlacko/Desktop/gen.obj").writeText(obj)
-
+        
         assertEquals(getResourceAsText("/turtle/3d/hilbertCurve.obj"), obj)
     }
 
