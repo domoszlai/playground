@@ -147,7 +147,7 @@ class Mano(Actor):
 
     def walk(self, dir):
         self.acceleration = dir * PLAYER_ACC
-        if dir.x > 0 and dir.y > 0:
+        if dir.x != 0 and dir.y != 0:
             self.acceleration *= 0.7071
 
     def update(self):
