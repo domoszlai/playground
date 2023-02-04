@@ -4,16 +4,17 @@ from base import Actor
 from colors import *
 
 TILE_SIZE = 32
-TILES_X = 20
-TILES_Y = 20
-CAMERA_WIDTH = TILES_X * 20
-CAMERA_HEIGHT = TILES_Y * 20
+GRID_WIDTH = 40
+GRID_HEIGHT = 40
+
+CAMERA_WIDTH = GRID_WIDTH * 20
+CAMERA_HEIGHT = GRID_HEIGHT * 20
 
 WIDTH = CAMERA_WIDTH
 HEIGHT = CAMERA_HEIGHT
 FPS = 30
 
-PLAYER_ACC = 3
+PLAYER_ACC = 5
 PLAYER_FRICTION = 0.4
 PLAYER_MAX_SPEED_X = 10
 PLAYER_MAX_SPEED_Y = 10
@@ -61,24 +62,15 @@ level = ["wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",
 
 class Camera():
     def __init__(self, camera_size, world_size):
-        cw, ch = camera_size
-        ww, wh = world_size
-        self.rect = pygame.Rect(0, 0, cw, ch)
-        self.ww = ww
-        self.wh = wh
+        self.rect = pygame.Rect(0, 0, camera_size.x, camera_size.y)
+        self.world_size = world_size
 
     def reposition(self, center):
         self.rect.center = center
-
-        if self.rect.left < 0:
-            self.rect.left = 0
-        elif self.rect.right > self.ww:
-            self.rect.right = self.ww
-
-        if self.rect.top < 0:
-            self.rect.top = 0
-        elif self.rect.bottom > self.wh:
-            self.rect.bottom = self.wh
+        self.rect.left = max(self.rect.left, 0)
+        self.rect.right = min(self.rect.right, self.world_size.x)
+        self.rect.top = max(self.rect.top, 0)
+        self.rect.bottom = min(self.rect.bottom, self.world_size.y)
 
     def get_translation(self):
         return self.rect.topleft
@@ -100,8 +92,8 @@ class World():
         self.player = Mano()
         self.player.rect.center = (100, 100)
         self.camera = Camera(
-            (CAMERA_WIDTH, CAMERA_HEIGHT),
-            (max(map(lambda r: len(r), level))*TILE_SIZE, len(level)*TILE_SIZE))
+            Vector2(CAMERA_WIDTH, CAMERA_HEIGHT),
+            Vector2(max(map(lambda r: len(r), level)), len(level))*TILE_SIZE)
         self.all_sprites = CameraGroup(self.camera)
         self.all_sprites.add(self.player)
         self.obstacles = pygame.sprite.Group()
@@ -146,12 +138,6 @@ class Tile(Actor):
         self.rect.left = x
         self.rect.top = y
 
-    def update(self):
-        pass
-
-    def collide(self, actor):
-        pass
-
 class Mano(Actor):
     def __init__(self):
         Actor.__init__(self)
@@ -159,9 +145,10 @@ class Mano(Actor):
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
 
-    def walk(self, dirx, diry):
-        self.acceleration.x = dirx * PLAYER_ACC
-        self.acceleration.y = diry * PLAYER_ACC
+    def walk(self, dir):
+        self.acceleration = dir * PLAYER_ACC
+        if dir.x > 0 and dir.y > 0:
+            self.acceleration *= 0.7071
 
     def update(self):
 
@@ -239,15 +226,18 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
+
+    walkdir = Vector2(0,0)
     keystate = pygame.key.get_pressed()
     if keystate[pygame.K_LEFT]:
-        world.player.walk(-1, 0)
+        walkdir.x = -1
     if keystate[pygame.K_RIGHT]:
-        world.player.walk(1, 0)
+        walkdir.x = 1
     if keystate[pygame.K_UP]:
-        world.player.walk(0, -1)
+        walkdir.y = -1
     if keystate[pygame.K_DOWN]:
-        world.player.walk(0, 1)
+        walkdir.y = 1
+    world.player.walk(walkdir)
 
     world.update()
     world.collision()
