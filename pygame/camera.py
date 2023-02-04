@@ -206,7 +206,6 @@ class Mano(Actor):
                 self.velocity.x = 0
                 self.rect.right = actor.rect.left
 
-# initialize pygame and create window
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -215,18 +214,13 @@ clock = pygame.time.Clock()
 
 world = World()
 
-# Game loop
 running = True
 while running:
-    # keep loop running at the right speed
     clock.tick(FPS)
-    # Process input (events)
     for event in pygame.event.get():
-        # check for closing window
         if event.type == pygame.QUIT:
             running = False
         
-
     walkdir = Vector2(0,0)
     keystate = pygame.key.get_pressed()
     if keystate[pygame.K_LEFT]:
