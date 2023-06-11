@@ -46,4 +46,9 @@ data class Vector3(val x: Float, val y: Float, val z: Float) {
     fun lengthSquared(): Float {
         return x * x + y * y + z * z
     }
+
+    fun nearZero(): Boolean {
+        val s = 1e-8f
+        return x < s && x > -s && y < s && y > -s && z < s && z > -s
+    }
 }

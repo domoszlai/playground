@@ -1,7 +1,8 @@
 data class Hit(
     val t: Float,
     val p: Point3,
-    val normal: Vector3
+    val normal: Vector3,
+    val material: Material
     )
 
 interface Hittable {

@@ -1,11 +1,21 @@
+package hittable
+
+import Hit
+import Hittable
+import Material
+import Ray
+import Vector3
 import kotlin.math.sqrt
 
 class Sphere : Hittable {
-    private var center : Vector3
-    private var radius : Float
-    constructor(center: Vector3, radius: Float) : super() {
+    private val center : Vector3
+    private val radius : Float
+    private val material : Material
+
+    constructor(center: Vector3, radius: Float, material: Material) : super() {
         this.center = center
         this.radius = radius
+        this.material = material
     }
 
     override fun hit(ray: Ray, tMin: Float, tMax: Float): Hit? {
@@ -27,6 +37,6 @@ class Sphere : Hittable {
         }
 
         val p = ray.at(root)
-        return Hit(root, p, (p - center) / radius)
+        return Hit(root, p, (p - center) / radius, material)
     }
 }

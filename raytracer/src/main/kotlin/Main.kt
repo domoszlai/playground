@@ -1,17 +1,7 @@
+import hittable.Sphere
+import material.Lambertian
 import kotlin.math.sqrt
 import kotlin.random.Random
-
-fun randomInUnitSphere() : Vector3 {
-    var p: Vector3
-    do {
-        p = Vector3(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()) * 2f - Vector3(1.0f, 1.0f, 1.0f)
-    } while (p.lengthSquared() >= 1.0)
-    return p
-}
-
-fun randomUnitVector() : Vector3 {
-    return randomInUnitSphere().normalize()
-}
 
 fun writeColor(pixelColor: Color,  samplesPerPixel: Int) {
     val r = pixelColor.r
@@ -33,12 +23,15 @@ fun writeColor(pixelColor: Color,  samplesPerPixel: Int) {
 fun rayColor(ray: Ray, hittable: Hittable, depth: Int) : Color {
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if (depth <= 0)
-        return Color(0,0,0)
+        return Color.BLACK
 
     val rec = hittable.hit(ray, 0.001f, Float.MAX_VALUE)
     return if(rec != null) {
-        val target = rec.p + rec.normal + randomUnitVector()
-        rayColor(Ray(rec.p, target - rec.p), hittable, depth - 1) * 0.5f
+        val scatterResult = rec.material.scatter(ray, rec)
+        if(scatterResult != null)
+            scatterResult.attenuation * rayColor(scatterResult.scattered, hittable, depth - 1)
+        else
+            Color.BLACK
     }
     else {
         val unitDirection = ray.direction.normalize()
@@ -60,8 +53,9 @@ fun main() {
     // World
 
     val world = HittableList(listOf(
-        Sphere(Point3(0f, 0f, -1f), 0.5f),
-        Sphere(Point3(0f, -100.5f, -1f), 100f)))
+        Sphere(Point3(0f, 0f, -1f), 0.5f, Lambertian(Color(0.7f, 0.3f, 0.3f))),
+        Sphere(Point3(0f, -100.5f, -1f), 100f, Lambertian(Color(0.8f, 0.8f, 0.0f))),
+    ))
 
     // Camera
 
