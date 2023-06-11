@@ -56,8 +56,8 @@ fun main() {
     val world = HittableList(listOf(
         Sphere(Point3(0f, 0f, -1f), 0.5f, Lambertian(Color(0.7f, 0.3f, 0.3f))),
         Sphere(Point3(0f, -100.5f, -1f), 100f, Lambertian(Color(0.8f, 0.8f, 0.0f))),
-        Sphere(Point3(-1f, 0f, -1f), 0.5f, Metal(Color(0.8f, 0.8f, 0.8f))),
-        Sphere(Point3(1f, 0f, -1f), 0.5f, Metal(Color(0.8f, 0.6f, 0.2f))),
+        Sphere(Point3(-1f, 0f, -1f), 0.5f, Metal(Color(0.8f, 0.8f, 0.8f), 0.3f)),
+        Sphere(Point3(1f, 0f, -1f), 0.5f, Metal(Color(0.8f, 0.6f, 0.2f), 1f)),
     ))
 
     // Camera
