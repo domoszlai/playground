@@ -2,7 +2,6 @@ import hittable.Sphere
 import material.Lambertian
 import material.Metal
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 fun writeColor(pixelColor: Color,  samplesPerPixel: Int) {
     val r = pixelColor.r
@@ -62,20 +61,18 @@ fun main() {
 
     // Camera
 
-    val cam = Camera()
+    val cam = Camera(imageWidth, imageHeight)
 
     // Render
 
     println("P3\n$imageWidth $imageHeight\n255")
 
-    for (y in imageHeight - 1 downTo 0) {
-        System.err.println("Scanlines remaining: $y")
-        for (x in 0 until imageWidth) {
+    for (j in 0 until imageHeight) {
+        System.err.println("Scanlines remaining: $j")
+        for (i in 0 until imageWidth) {
             var pixelColor = Color(0f, 0f, 0f)
-            for (s in 0 until samplesPerPixel) {
-                val u = (x + Random.nextFloat()) / (imageWidth - 1)
-                val v = (y + Random.nextFloat()) / (imageHeight - 1)
-                val r = cam.getRay(u, v)
+            for (sample in 0 until samplesPerPixel) {
+                val r = cam.getRay(i, j)
                 pixelColor += rayColor(r, world, maxDepth)
             }
             writeColor(pixelColor, samplesPerPixel)

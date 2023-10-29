@@ -15,12 +15,21 @@ data class Vector3(val x: Float, val y: Float, val z: Float) {
         return Vector3(x - v.x, y - v.y, z - v.z)
     }
 
+    operator fun times(c: Int): Vector3 {
+        val f = c.toFloat()
+        return Vector3(x * f, y * f, z * f)
+    }
+
     operator fun times(c: Float): Vector3 {
         return Vector3(x * c, y * c, z * c)
     }
 
     operator fun times(v: Vector3): Vector3 {
         return Vector3(x * v.x, y * v.y, z * v.z)
+    }
+
+    operator fun div(c: Int): Vector3 {
+        return this * (1f / c.toFloat())
     }
 
     operator fun div(c: Float): Vector3 {
