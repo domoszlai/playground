@@ -21,16 +21,18 @@ class Sphere : Hittable {
     override fun hit(ray: Ray, tMin: Float, tMax: Float): Hit? {
         val oc = ray.origin - center
         val a = ray.direction.lengthSquared()
-        val halfB = oc.dot(ray.direction)
+        val h = oc.dot(ray.direction)
         val c = oc.lengthSquared() - radius * radius
-        val discriminant = halfB * halfB - a * c
+
+        val discriminant = h * h - a * c
         if(discriminant < 0) {
             return null
         }
+
         val sqrtD = sqrt(discriminant)
-        var root = (-halfB - sqrtD) / a
+        var root = (-h - sqrtD) / a
         if(root < tMin || tMax < root) {
-            root = (-halfB + sqrtD) / a
+            root = (-h + sqrtD) / a
             if(root < tMin || tMax < root) {
                 return null
             }
