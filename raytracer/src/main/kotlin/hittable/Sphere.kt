@@ -5,6 +5,8 @@ import Hittable
 import Material
 import Ray
 import Vector3
+import Interval
+
 import kotlin.math.sqrt
 
 class Sphere : Hittable {
@@ -18,7 +20,7 @@ class Sphere : Hittable {
         this.material = material
     }
 
-    override fun hit(ray: Ray, tMin: Float, tMax: Float): Hit? {
+    override fun hit(ray: Ray, t: Interval): Hit? {
         val oc = ray.origin - center
         val a = ray.direction.lengthSquared()
         val h = oc.dot(ray.direction)
@@ -31,9 +33,9 @@ class Sphere : Hittable {
 
         val sqrtD = sqrt(discriminant)
         var root = (-h - sqrtD) / a
-        if(root < tMin || tMax < root) {
+        if(!t.surrounds(root)) {
             root = (-h + sqrtD) / a
-            if(root < tMin || tMax < root) {
+            if(!t.surrounds(root)) {
                 return null
             }
         }

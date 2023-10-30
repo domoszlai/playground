@@ -25,7 +25,7 @@ fun rayColor(ray: Ray, hittable: Hittable, depth: Int) : Color {
     if (depth <= 0)
         return Color.BLACK
 
-    val rec = hittable.hit(ray, 0.001f, Float.MAX_VALUE)
+    val rec = hittable.hit(ray, Interval(0.001f, Float.MAX_VALUE))
     return if(rec != null) {
         val scatterResult = rec.material.scatter(ray, rec)
         if(scatterResult != null)
